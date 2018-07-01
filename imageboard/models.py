@@ -14,11 +14,11 @@ class Thread(models.Model):
     name = models.CharField(max_length=20, default='Anonymous')
     time_made = models.DateTimeField(auto_now=True)
     post = models.CharField(max_length=5000, blank=False)
-    bumb_order = models.PositiveIntegerField(default=0)
+    bumb_order = models.DateTimeField(auto_now=True)
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
     class Meta:
-        ordering = ['-bumb_order']
+        get_latest_by = ['bumb_order']
 
 class UserPost(models.Model):
     def get_post_number():
@@ -37,7 +37,7 @@ class UserPost(models.Model):
         return str(self.post_number)
 
     def save(self, *args, **kwargs):
-        self.thread.bumb_order=self.post_number
+        self.thread.bumb_order=self.time_made
         self.thread.save()
         super(UserPost, self).save(*args, **kwargs)
     class Meta:
