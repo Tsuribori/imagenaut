@@ -84,6 +84,9 @@ DATABASES = {
         'PASSWORD': 'default',
         'HOST': 'localhost',
         'PORT': '',
+        'TEST': {
+            'NAME': 'test_imagenaut',
+        },
     }
 }
 
