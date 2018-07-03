@@ -1,0 +1,21 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+
+{% block img_content %}
+  <div id={{ thread.thread_number }}>
+    {% if thread.subject %}
+      <span>{{ thread.subject }}</span>
+    {% endif %}
+    <span>{{ thread.name }}</span>
+    <span>{{ thread.get_date }}</span>
+    <span>No. {{ thread.thread_number }}</span>
+    <p>{{ thread.post }}</p>
+  </div>
+  {% for post in thread.userpost_set.all %}
+    <div id={{ post.post_number }}>
+      <span>{{ post.name }}</span>
+      <span>{{ post.get_date }}</span>
+      <span>No. {{ post.post_number }}</span>
+      <p>{{ post.post }}</p>
+    </div>
+  {% endfor %}
+{% endblock %} 

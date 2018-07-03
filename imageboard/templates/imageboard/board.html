@@ -1,0 +1,18 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+
+{% block img_content %}
+  {% for thread in thread_list %}
+    <div id={{ thread.thread_number }}>
+      {% if thread.subject %}
+      <span>{{ thread.subject }}</span>
+      {% endif %}
+      <span>{{ thread.name }}</span>
+      <span>{{ thread.get_date }}</span>
+      <span>No. {{ thread.thread_number }}</span>
+      <p>{{ thread.post }}</p>
+      <a href="{{ thread.get_absolute_url }}">
+        View Thread</a>
+    </div>
+  {% endfor %}
+{% endblock %}
+

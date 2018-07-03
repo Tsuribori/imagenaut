@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from django.conf.urls import include
+from imageboard import urls as imageboard_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('board/', include(imageboard_urls)),
 ]
