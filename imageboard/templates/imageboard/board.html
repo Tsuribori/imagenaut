@@ -14,5 +14,13 @@
         View Thread</a>
     </div>
   {% endfor %}
+  {% if is_paginated %}
+    <div>
+      {% for page_number in page_obj.paginator.page_range %}
+          <a href="{{ page_url }}{{page_number}}">
+            [{{ page_number }}]</a>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endblock %}
 

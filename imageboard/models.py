@@ -34,6 +34,7 @@ class Thread(models.Model):
         return self.time_made.strftime("%a %H:%S, %d %b %Y") 
     class Meta:
         get_latest_by = ['bumb_order']
+        ordering = ['bumb_order']
 
 class UserPost(models.Model):
     def get_post_number():

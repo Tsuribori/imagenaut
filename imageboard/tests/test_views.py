@@ -10,6 +10,10 @@ class ViewTestCase(TestCase):
         self.thread2 = Thread.objects.create(post='This is a test too!', board=self.board1)
         self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1)
         self.post2 = UserPost.objects.create(post='I hate john', name='Not john', thread=self.thread2)
+        number_of_threads = 21
+        for number in range(number_of_threads): #Create 21 thread to test pagination
+            Thread.objects.create(post=str(number), board=self.board1)
+
 
     def test_board_url(self): #Test the board view
         resp = self.client.get(reverse('imageboard_thread_list', kwargs={'board': self.board1.slug}))
@@ -22,4 +26,15 @@ class ViewTestCase(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'imageboard/thread.html')
         self.assertTrue('thread' in resp.context)
+
+    def test_pagination(self): #Test that pagination works
+        resp = self.client.get(reverse('imageboard_thread_list', kwargs={'board': self.board1.slug}))
+        self.assertTrue('is_paginated' in resp.context)
+        self.assertTrue(len(resp.context['thread_list']) == 10)
+        
+    def test_pagination_url(self): #Test that page url is in form '?page=' and that last page contains right amount of threads
+        resp = resp = self.client.get(reverse('imageboard_thread_list', kwargs={'board': self.board1.slug}) + '?page=3')
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue('is_paginated' in resp.context)
+        self.assertTrue(len(resp.context['thread_list']) == 3)
 
