@@ -37,8 +37,13 @@ class ModelTestCase(TestCase):
         self.assertEqual(next_post, self.post2.post_number + 1)
 
     def test_get_date(self): #Test the custom get_date method
-        self.assertEqual(self.thread1.get_date(), self.thread1.time_made.strftime("%a %H:%S, %d %b %Y"))
-        self.assertEqual(self.post1.get_date(), self.post1.time_made.strftime("%a %H:%S, %d %b %Y"))
+        self.assertEqual(self.thread1.get_date(), self.thread1.time_made.strftime("%a %H:%M, %d %b %Y"))
+        self.assertEqual(self.post1.get_date(), self.post1.time_made.strftime("%a %H:%M, %d %b %Y"))
 
     def test_get_absolute_url(self): #Test the get_absolute_url methods
-        self.assertEqual(self.thread1.get_absolute_url(), '/board/{}/{}/'.format(self.board1.slug, self.thread1.thread_number)) 
+        self.assertEqual(self.thread1.get_absolute_url(), '/board/{}/{}/'.format(self.board1.slug, self.thread1.thread_number))
+
+    def test_create_urls(self):
+        self.assertEqual(self.board1.get_thread_create_url(), '/board/{}/create/'.format(self.board1.slug))
+        self.assertEqual(self.thread1.get_post_create_url(), '/board/{}/{}/create/'.format(self.board1.slug, self.thread1.thread_number))
+    

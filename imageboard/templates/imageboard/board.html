@@ -14,6 +14,9 @@
         View Thread</a>
     </div>
   {% endfor %}
+
+  {% include 'imageboard/userpost_form.html' with create_url=board.get_thread_create_url submit_button='Make thread' %}
+
   {% if is_paginated %}
     <div>
       {% for page_number in page_obj.paginator.page_range %}

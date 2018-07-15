@@ -1,0 +1,7 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+
+{% block img_content %}
+  <div>
+    {% include "imageboard/userpost_form.html" %}
+  </div>
+{% endblock %}
