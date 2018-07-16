@@ -32,6 +32,7 @@ class Thread(models.Model, DateMixin):
     post = models.CharField(max_length=5000, blank=False)
     bumb_order = models.DateTimeField(auto_now=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    ip_address = models.GenericIPAddressField()
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
     def get_absolute_url(self):
@@ -54,6 +55,7 @@ class UserPost(models.Model, DateMixin):
     time_made = models.DateTimeField(auto_now=True)
     post = models.CharField(max_length=5000, blank=False)
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE)
+    ip_address = models.GenericIPAddressField()
 
     def __str__(self):
         return str(self.post_number)

@@ -5,11 +5,12 @@ from imageboard.models import Board, Thread, UserPost
 class ModelTestCase(TestCase):
    
     def setUp(self):
+        self.ip_addr = '127.0.0.1'
         self.board1 = Board.objects.create(name='Test board', slug='test') 
-        self.thread1 = Thread.objects.create(post='Test thread!', board=self.board1)
-        self.thread2 = Thread.objects.create(post='This is a test too!', board=self.board1)
-        self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1)
-        self.post2 = UserPost.objects.create(post='I hate john', name='Not john', thread=self.thread2)
+        self.thread1 = Thread.objects.create(post='Test thread!', board=self.board1, ip_address=self.ip_addr)
+        self.thread2 = Thread.objects.create(post='This is a test too!', board=self.board1, ip_address=self.ip_addr)
+        self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1, ip_address=self.ip_addr)
+        self.post2 = UserPost.objects.create(post='I hate john', name='Not john', thread=self.thread2, ip_address=self.ip_addr)
             
     def test_instances(self):
         self.assertTrue(isinstance(self.board1, Board))

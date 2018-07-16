@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from .models import Board, Thread
 from .forms import ThreadForm, UserPostForm
+from .utils import GetIPMixin
 from django.views.generic import ListView, CreateView
 
 # Create your views here.
@@ -36,19 +37,21 @@ class ThreadDetail(ListView):
        context['form'] = UserPostForm
        return context   
 
-class ThreadCreate(CreateView):
+class ThreadCreate(CreateView, GetIPMixin):
     form_class = ThreadForm
     template_name = 'imageboard/userpost_form_page.html'
 
     def form_valid(self, form):
+        form.instance.ip_address = self.get_remote_address()
         form.instance.board = get_object_or_404(Board, slug=self.kwargs['board'])
         return super(ThreadCreate, self).form_valid(form)
 
-class UserPostCreate(CreateView):
+class UserPostCreate(CreateView, GetIPMixin):
     form_class = UserPostForm
     template_name = 'imageboard/userpost_form_page.html'
     
     def form_valid(self, form):
+        form.instance.ip_address = self.get_remote_address()
         form.instance.thread = get_object_or_404(Thread, thread_number=self.kwargs['thread_number'])
         return super(UserPostCreate, self).form_valid(form)
    

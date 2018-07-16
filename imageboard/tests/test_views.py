@@ -6,14 +6,15 @@ from imageboard.forms import ThreadForm, UserPostForm
 class ViewTestCase(TestCase):
     
     def setUp(self):
+        self.ip_addr = '127.0.0.1'
         self.board1 = Board.objects.create(name='Test board', slug='test') 
-        self.thread1 = Thread.objects.create(post='Test thread!', board=self.board1)
-        self.thread2 = Thread.objects.create(post='This is a test too!', board=self.board1)
-        self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1)
-        self.post2 = UserPost.objects.create(post='I hate john', name='Not john', thread=self.thread2)
+        self.thread1 = Thread.objects.create(post='Test thread!', board=self.board1, ip_address=self.ip_addr)
+        self.thread2 = Thread.objects.create(post='This is a test too!', board=self.board1, ip_address=self.ip_addr)
+        self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1, ip_address=self.ip_addr)
+        self.post2 = UserPost.objects.create(post='I hate john', name='Not john', thread=self.thread2, ip_address=self.ip_addr)
         number_of_threads = 21
         for number in range(number_of_threads): #Create 21 thread to test pagination
-            Thread.objects.create(post=str(number), board=self.board1)
+            Thread.objects.create(post=str(number), board=self.board1, ip_address=self.ip_addr)
 
 
     def test_board_url(self): #Test the board view
@@ -60,6 +61,7 @@ class ViewTestCase(TestCase):
        self.assertEqual(resp.status_code, 302)
        new_thread = Thread.objects.get(post=post_made)
        self.assertEqual(new_thread.name, 'Iodine')
+       self.assertEqual(new_thread.ip_address, '127.0.0.1')
  
     def test_post_form_post(self):
        post_made = 'Let me give you a quick rundown'
@@ -68,4 +70,5 @@ class ViewTestCase(TestCase):
        self.assertEqual(resp.status_code, 302)
        new_post = UserPost.objects.get(post=post_made)
        self.assertEqual(new_post.name, 'Bogpilled')
+       self.assertEqual(new_post.ip_address, '127.0.0.1')
        
