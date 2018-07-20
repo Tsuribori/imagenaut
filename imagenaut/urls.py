@@ -17,7 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
 from imageboard import urls as imageboard_urls
+from moderation import urls as moderation_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('board/', include(imageboard_urls)),
+    path('mod/', include(moderation_urls)),
 ]

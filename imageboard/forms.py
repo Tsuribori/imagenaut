@@ -1,6 +1,5 @@
 from django import forms
 from .models import Thread, UserPost
-from django.shortcuts import get_object_or_404
 
 class ThreadForm(forms.ModelForm):
     class Meta:

@@ -43,19 +43,19 @@ class ViewTestCase(TestCase):
 
     #Form view tests below
    
-    def test_thread_form(self):
+    def test_thread_form(self): #Test that form page for thread displays correctly
         resp = self.client.get(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}))
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('form' in resp.context)
         self.assertTemplateUsed(resp, 'imageboard/userpost_form_page.html') 
 
-    def test_post_form(self):
+    def test_post_form(self): #Test that form page for post displays correctly
         resp = self.client.get(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}))
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('form' in resp.context)
         self.assertTemplateUsed(resp, 'imageboard/userpost_form_page.html')
 
-    def test_thread_form_post(self):
+    def test_thread_form_post(self): #Test that threads can be made
        post_made = 'This is a form test'
        resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), {'post': post_made, 'name': 'Iodine'})
        self.assertEqual(resp.status_code, 302)
@@ -63,7 +63,7 @@ class ViewTestCase(TestCase):
        self.assertEqual(new_thread.name, 'Iodine')
        self.assertEqual(new_thread.ip_address, '127.0.0.1')
  
-    def test_post_form_post(self):
+    def test_post_form_post(self): #Test that posts can be made
        post_made = 'Let me give you a quick rundown'
        resp = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}), 
            {'post': post_made, 'name': 'Bogpilled'})

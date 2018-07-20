@@ -44,7 +44,7 @@ class ModelTestCase(TestCase):
     def test_get_absolute_url(self): #Test the get_absolute_url methods
         self.assertEqual(self.thread1.get_absolute_url(), '/board/{}/{}/'.format(self.board1.slug, self.thread1.thread_number))
 
-    def test_create_urls(self):
+    def test_create_urls(self): #Test create urls for thread an post
         self.assertEqual(self.board1.get_thread_create_url(), '/board/{}/create/'.format(self.board1.slug))
         self.assertEqual(self.thread1.get_post_create_url(), '/board/{}/{}/create/'.format(self.board1.slug, self.thread1.thread_number))
     
