@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from .models import Transgression
 from imageboard.models import Thread, UserPost
+from imageboard.utils import GetIPMixin #IP needed for ban page
 from .forms import TransgressionForm
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 # Create your views here.
 
 class ThreadBanCreate(CreateView):
@@ -35,3 +37,11 @@ class UserPostBanCreate(CreateView):
         form.instance.ip_address = self.userpost.ip_address
         return super(UserPostBanCreate, self).form_valid(form)
 
+class TransgressionList(ListView, GetIPMixin): #Ban page that shows user bans
+    model = Transgression
+    context_object_name = 'transgression_list'
+    template_name = 'moderation/transgression_detail.html'
+
+    def get_queryset(self):
+        ip_address = self.get_remote_address()
+        return Transgression.objects.filter(ip_address__iexact=ip_address)

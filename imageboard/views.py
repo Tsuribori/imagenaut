@@ -1,9 +1,8 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from .models import Board, Thread
 from .forms import ThreadForm, UserPostForm
-from .utils import GetIPMixin
+from .utils import GetIPMixin, BanMixin
 from django.views.generic import ListView, CreateView
-
 # Create your views here.
 
 class ThreadList(ListView):
@@ -37,18 +36,31 @@ class ThreadDetail(ListView):
        context['form'] = UserPostForm
        return context   
 
-class ThreadCreate(CreateView, GetIPMixin):
+class ThreadCreate(CreateView, GetIPMixin, BanMixin):
     form_class = ThreadForm
     template_name = 'imageboard/userpost_form_page.html'
+
+    def dispatch(self, request, *args, **kwargs): #Check if the user is banned, redirect if true
+        if self.user_is_banned():
+            return redirect('moderation_ban_page')
+        else:
+            return super(ThreadCreate, self).dispatch(request, *args, **kwargs)
+
 
     def form_valid(self, form):
         form.instance.ip_address = self.get_remote_address()
         form.instance.board = get_object_or_404(Board, slug=self.kwargs['board'])
         return super(ThreadCreate, self).form_valid(form)
 
-class UserPostCreate(CreateView, GetIPMixin):
+class UserPostCreate(CreateView, GetIPMixin, BanMixin):
     form_class = UserPostForm
     template_name = 'imageboard/userpost_form_page.html'
+
+    def dispatch(self, request, *args, **kwargs): #Check if the user is banned, redirect if true
+        if self.user_is_banned():
+            return redirect('moderation_ban_page')
+        else:
+            return super(UserPostCreate, self).dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
         form.instance.ip_address = self.get_remote_address()
