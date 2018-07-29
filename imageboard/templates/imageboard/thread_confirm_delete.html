@@ -1,0 +1,21 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+
+{% block img_content %}
+  <div>
+    <form 
+      action="{{ thread.get_delete_url }}"
+      method="post">
+    {% csrf_token %}
+      <p>Are you sure you want to delete
+        thread No. {{ thread.thread_number }}?
+      </p>
+      
+      <a href="{{ thread.get_absolute_url }}">
+        Cancel</a>
+
+      <button type="submit">Delete Thread</button>
+      
+    </form>
+  </div>
+{% endblock %}
+

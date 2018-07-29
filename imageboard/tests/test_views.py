@@ -3,7 +3,9 @@ from django.urls import reverse
 from imageboard.models import Board, Thread, UserPost
 from imageboard.forms import ThreadForm, UserPostForm
 
-class ViewTestCase(TestCase):
+
+
+class SetUpMixin(TestCase):
     
     def setUp(self):
         self.ip_addr = '127.0.0.1'
@@ -16,6 +18,8 @@ class ViewTestCase(TestCase):
         for number in range(number_of_threads): #Create 21 thread to test pagination
             Thread.objects.create(post=str(number), board=self.board1, ip_address=self.ip_addr)
 
+class ViewTestCase(SetUpMixin):
+   
 
     def test_board_url(self): #Test the board view
         resp = self.client.get(reverse('imageboard_thread_list', kwargs={'board': self.board1.slug}))
@@ -41,8 +45,9 @@ class ViewTestCase(TestCase):
         self.assertTrue('is_paginated' and 'form' and 'board' in resp.context)
         self.assertTrue(len(resp.context['thread_list']) == 3)
 
-    #Form view tests below
-   
+    
+class CreateViewTestCase(SetUpMixin):
+ 
     def test_thread_form(self): #Test that form page for thread displays correctly
         resp = self.client.get(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}))
         self.assertEqual(resp.status_code, 200)
@@ -72,3 +77,38 @@ class ViewTestCase(TestCase):
        self.assertEqual(new_post.name, 'Bogpilled')
        self.assertEqual(new_post.ip_address, '127.0.0.1')
        
+class DeleteViewTestCase(SetUpMixin):
+
+    def test_thread_delete_form_get(self):
+        resp = self.client.get(
+            reverse('imageboard_thread_delete', kwargs={
+                'board': self.board1.slug, 'thread_number': self.thread1.thread_number}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'imageboard/thread_confirm_delete.html')
+        self.assertTrue('thread' in resp.context)
+
+    def test_thread_delete_form_post(self):
+        resp = self.client.post(
+            reverse('imageboard_thread_delete', kwargs={
+                'board': self.board1.slug, 'thread_number': self.thread1.thread_number}))
+        self.assertRedirects(resp, expected_url=reverse('imageboard_thread_list', kwargs={'board': self.board1.slug}), status_code=302)
+        self.assertFalse(Thread.objects.filter(thread_number=self.thread1.thread_number).exists()) #Check if thread was deleted
+
+        
+
+    def test_userpost_delete_form_get(self):
+        resp = self.client.get(
+            reverse('imageboard_userpost_delete', kwargs={
+                'board': self.board1.slug, 'thread_number': self.thread1.thread_number, 'post_number': self.post1.post_number}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertTemplateUsed(resp, 'imageboard/userpost_confirm_delete.html')
+        self.assertTrue('userpost' in resp.context)
+        
+
+    def test_userpost_delete_form_post(self):
+       resp = self.client.post(
+           reverse('imageboard_userpost_delete', kwargs={
+               'board': self.board1.slug, 'thread_number': self.thread1.thread_number, 'post_number': self.post1.post_number}))
+       self.assertRedirects(resp, expected_url=reverse('imageboard_thread_page', kwargs={
+           'board': self.board1.slug, 'thread_number': self.thread1.thread_number}), status_code=302)
+       self.assertFalse(UserPost.objects.filter(post_number=self.post1.post_number).exists())

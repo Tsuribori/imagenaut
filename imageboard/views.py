@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404, redirect
-from .models import Board, Thread
+from .models import Board, Thread, UserPost
 from .forms import ThreadForm, UserPostForm
 from .utils import GetIPMixin, BanMixin
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, DeleteView
 # Create your views here.
 
 class ThreadList(ListView):
@@ -66,4 +66,31 @@ class UserPostCreate(CreateView, GetIPMixin, BanMixin):
         form.instance.ip_address = self.get_remote_address()
         form.instance.thread = get_object_or_404(Thread, thread_number=self.kwargs['thread_number'])
         return super(UserPostCreate, self).form_valid(form)
+
+class ThreadDelete(DeleteView):
+    model = Thread
+    template_name = 'imageboard/thread_confirm_delete.html'
    
+    def dispatch(self, request, *args, **kwargs): 
+        self.thread = get_object_or_404(Thread, thread_number=kwargs['thread_number'])
+        return super(ThreadDelete, self).dispatch(request, *args, **kwargs) 
+   
+    def get_object(self):
+        return self.thread
+
+    def get_success_url(self):
+        return self.thread.board.get_absolute_url()
+
+class UserPostDelete(DeleteView):
+    model = UserPost
+    template_name = 'imageboard/userpost_confirm_delete.html'
+ 
+    def dispatch(self, request, *args, **kwargs): 
+        self.userpost = get_object_or_404(UserPost, post_number=kwargs['post_number'])
+        return super(UserPostDelete, self).dispatch(request, *args, **kwargs)
+        
+    def get_object(self):
+        return self.userpost
+    
+    def get_success_url(self):
+        return self.userpost.thread.get_absolute_url()

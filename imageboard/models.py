@@ -11,9 +11,10 @@ class DateMixin(): #Format the date in templates for thread and post
 class Board(models.Model):
     name = models.CharField(max_length=31, unique=True)
     slug = models.SlugField(max_length=31, unique=True)
+    def get_absolute_url(self):
+        return reverse('imageboard_thread_list', kwargs={'board': self.slug})
     def get_thread_create_url(self):
         return reverse('imageboard_thread_create', kwargs={'board': self.slug})
-
     def __str__(self):
         return self.name
 
@@ -39,6 +40,8 @@ class Thread(models.Model, DateMixin):
         return reverse('imageboard_thread_page', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
     def get_post_create_url(self):
         return reverse('imageboard_userpost_create', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
+    def get_delete_url(self):
+        return reverse('imageboard_thread_delete', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
         
     class Meta:
         ordering = ['-bumb_order']
@@ -62,6 +65,9 @@ class UserPost(models.Model, DateMixin):
 
     def get_absolute_url(self): #No individual view for post, so just return the threads page 
         return self.thread.get_absolute_url()
+    def get_delete_url(self):
+        return reverse('imageboard_userpost_delete', kwargs={
+            'board': self.thread.board.slug, 'thread_number': self.thread.thread_number, 'post_number': self.post_number})
     def save(self, *args, **kwargs):
         self.thread.bumb_order=self.time_made
         self.thread.save()
