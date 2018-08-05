@@ -1,5 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from datetime import timedelta
+from time import sleep
 from imageboard.models import Board, Thread, UserPost
 from imageboard.forms import ThreadForm, UserPostForm
 
@@ -46,7 +51,21 @@ class ViewTestCase(SetUpMixin):
         self.assertTrue(len(resp.context['thread_list']) == 3)
 
     
-class CreateViewTestCase(SetUpMixin):
+class CreateViewTestCase(TestCase):
+
+    def setUp(self): #Must have own setUp, else CooldownMixin in imagenaut.utils will cause problems
+        self.ip_addr = '127.0.0.1'
+        self.board1 = Board.objects.create(name='Test board', slug='test') 
+        self.thread1 = Thread.objects.create(post='Test thread!', board=self.board1, ip_address=self.ip_addr)
+        self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1, ip_address=self.ip_addr)
+        self.old_THREAD_COOLDOWN = settings.THREAD_COOLDOWN
+        settings.THREAD_COOLDOWN = 0.1
+        self.old_POST_COOLDOWN = settings.POST_COOLDOWN
+        settings.POST_COOLDOWN = 0.1
+
+    def tearDown(self):
+        settings.THREAD_COOLDOWN = self.old_THREAD_COOLDOWN
+        settings.POST_COOLDOWN = self.old_POST_COOLDOWN        
  
     def test_thread_form(self): #Test that form page for thread displays correctly
         resp = self.client.get(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}))
@@ -61,6 +80,7 @@ class CreateViewTestCase(SetUpMixin):
         self.assertTemplateUsed(resp, 'imageboard/userpost_form_page.html')
 
     def test_thread_form_post(self): #Test that threads can be made
+       sleep(0.15) #Sleep so cooldown is reset and posting works
        post_made = 'This is a form test'
        resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), {'post': post_made, 'name': 'Iodine'})
        self.assertEqual(resp.status_code, 302)
@@ -69,6 +89,7 @@ class CreateViewTestCase(SetUpMixin):
        self.assertEqual(new_thread.ip_address, '127.0.0.1')
  
     def test_post_form_post(self): #Test that posts can be made
+       sleep(0.15)
        post_made = 'Let me give you a quick rundown'
        resp = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}), 
            {'post': post_made, 'name': 'Bogpilled'})
@@ -76,6 +97,19 @@ class CreateViewTestCase(SetUpMixin):
        new_post = UserPost.objects.get(post=post_made)
        self.assertEqual(new_post.name, 'Bogpilled')
        self.assertEqual(new_post.ip_address, '127.0.0.1')
+
+    def test_thread_cooldown(self):
+       resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), 
+           {'post': 'Aluminium is overrated', 'name': 'Iodine'})
+       self.assertEqual(resp.status_code, 200)
+       self.assertFormError(resp, 'form', field='name', errors=['You must wait longer before making a new thread.'])
+
+    def test_post_cooldown(self):
+       resp = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}), 
+           {'post': 'Aluminium is overrated', 'name': 'Iodine'})
+       self.assertEqual(resp.status_code, 200)
+       self.assertFormError(resp, 'form', field='name', errors=['You must wait longer before making a new post.'])
+
        
 class DeleteViewTestCase(SetUpMixin):
 
@@ -112,3 +146,5 @@ class DeleteViewTestCase(SetUpMixin):
        self.assertRedirects(resp, expected_url=reverse('imageboard_thread_page', kwargs={
            'board': self.board1.slug, 'thread_number': self.thread1.thread_number}), status_code=302)
        self.assertFalse(UserPost.objects.filter(post_number=self.post1.post_number).exists())
+
+

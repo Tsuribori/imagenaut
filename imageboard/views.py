@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect
 from .models import Board, Thread, UserPost
 from .forms import ThreadForm, UserPostForm
-from .utils import GetIPMixin, BanMixin
+from .utils import GetIPMixin, BanMixin, CooldownMixin
 from django.views.generic import ListView, CreateView, DeleteView
 # Create your views here.
 
@@ -36,15 +36,20 @@ class ThreadDetail(ListView):
        context['form'] = UserPostForm
        return context   
 
-class ThreadCreate(CreateView, GetIPMixin, BanMixin):
+class ThreadCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
     form_class = ThreadForm
     template_name = 'imageboard/userpost_form_page.html'
 
     def dispatch(self, request, *args, **kwargs): #Check if the user is banned, redirect if true
         if self.user_is_banned():
-            return redirect('moderation_ban_page')
+            return redirect('dj-mod:moderation_ban_page')
         else:
             return super(ThreadCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(ThreadCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
 
     def form_valid(self, form):
@@ -52,15 +57,20 @@ class ThreadCreate(CreateView, GetIPMixin, BanMixin):
         form.instance.board = get_object_or_404(Board, slug=self.kwargs['board'])
         return super(ThreadCreate, self).form_valid(form)
 
-class UserPostCreate(CreateView, GetIPMixin, BanMixin):
+class UserPostCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
     form_class = UserPostForm
     template_name = 'imageboard/userpost_form_page.html'
 
     def dispatch(self, request, *args, **kwargs): #Check if the user is banned, redirect if true
         if self.user_is_banned():
-            return redirect('moderation_ban_page')
+            return redirect('dj-mod:moderation_ban_page')
         else:
             return super(UserPostCreate, self).dispatch(request, *args, **kwargs)
+    
+    def get_form_kwargs(self):
+        kwargs = super(UserPostCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
     
     def form_valid(self, form):
         form.instance.ip_address = self.get_remote_address()

@@ -21,5 +21,5 @@ from moderation import urls as moderation_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('board/', include(imageboard_urls)),
-    path('mod/', include(moderation_urls)),
+    path('mod/', include((moderation_urls, 'mod'), namespace='dj-mod')),
 ]

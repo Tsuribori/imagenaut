@@ -1,8 +1,8 @@
 <form
-  action="{{ create_url }}"
+  action="{% url 'dj-mod:login' %}"
   method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">
-    {{ submit_button|default:"Post" }}</button>
+    {{ login_button|default:'Log in' }}</button>
 </form>

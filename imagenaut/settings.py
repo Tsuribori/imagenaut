@@ -129,3 +129,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+#Login URLs
+
+from django.urls import reverse_lazy
+
+LOGIN_REDIRECT_URL = reverse_lazy('imageboard_thread_list', kwargs={'board': 'a'})
+LOGIN_URL = reverse_lazy('dj-mod:login')
+LOGOUT_URL = reverse_lazy('dj-mod:logout')
+
+#Project settings
+
+THREAD_COOLDOWN = 600 #Seconds user has to wait until making a new thread
+POST_COOLDOWN = 50 # Seconds user has to wait until making a new post
