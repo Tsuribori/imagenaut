@@ -1,8 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from django.conf import settings
 from django.contrib.auth.models import User
 from datetime import timedelta
+from time import sleep
 from imagenaut.settings import LOGIN_REDIRECT_URL
 from imageboard.models import Board, Thread, UserPost
 from moderation.models import Transgression
@@ -45,10 +47,11 @@ class BanViewTestCase(TestCase):
 
  
     def test_ban_page_redirect(self): #Test that banned user redirect to the banned page correctly
-        resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), {'post': 'Im trying to break the rules!'})
+        resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), 
+            {'post': 'Im trying to break the rules!', 'name': 'Anon'})
         self.assertRedirects(resp, expected_url=reverse('dj-mod:moderation_ban_page'))
         resp2 = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}), 
-            {'post': 'Im trying to break the rules!'})
+            {'post': 'Im trying to break the rules!', 'name': 'Anon'})
         self.assertRedirects(resp2, expected_url=reverse('dj-mod:moderation_ban_page'))
         
 
@@ -57,6 +60,35 @@ class BanViewTestCase(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'moderation/transgression_detail.html')
         self.assertTrue('transgression_list' in resp.context)
+
+class BanProperRedirectTestCase(TestCase): #Test that there is no redirect when user was banned in the past but it has expired
+    
+    def setUp(self):
+        self.ban1 = self.ip_addr = '127.0.0.1' 
+        self.board1 = Board.objects.create(name='Test board', slug='test')
+        self.thread1 = Thread.objects.create(post='Test thread!', board=self.board1, ip_address=self.ip_addr)
+        self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1, ip_address=self.ip_addr)
+        self.ban1 = Transgression.objects.create(banned_until=timezone.now()+timedelta(seconds=0.1), reason='Not liking the mods!', ip_address=self.ip_addr)
+        self.old_THREAD_COOLDOWN = settings.THREAD_COOLDOWN
+        settings.THREAD_COOLDOWN = 0.05
+        self.old_POST_COOLDOWN = settings.POST_COOLDOWN
+        settings.POST_COOLDOWN = 0.05
+
+    def tearDown(self):
+        settings.THREAD_COOLDOWN = self.old_THREAD_COOLDOWN
+        settings.POST_COOLDOWN = self.old_POST_COOLDOWN
+    
+    def test_no_thread_redirect(self):
+        sleep(0.1)
+        resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), 
+            {'post': 'Im not breaking the rules!', 'name': 'Anon'})
+        self.assertRedirects(resp, expected_url=reverse('imageboard_thread_page', kwargs={'board': self.board1.slug, 'thread_number': 1}), status_code=302)
+
+    def test_no_post_redirect(self):
+        sleep(0.1)
+        resp = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}),
+            {'post': 'Im not breaking the rules!', 'name': 'Anon'})
+        self.assertRedirects(resp, expected_url=self.thread1.get_absolute_url(), status_code=302)
 
 
 class LoginViewTestCase(TestCase):
