@@ -71,12 +71,14 @@ class CreateViewTestCase(TestCase):
         resp = self.client.get(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}))
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('form' in resp.context)
+        self.assertTrue('board' in resp.context)
         self.assertTemplateUsed(resp, 'imageboard/thread_form_page.html') 
 
     def test_post_form(self): #Test that form page for post displays correctly
         resp = self.client.get(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}))
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('form' in resp.context) 
+        self.assertTrue('thread' in resp.context)
         self.assertTemplateUsed(resp, 'imageboard/userpost_form_page.html')
 
     def test_thread_form_post(self): #Test that threads can be made

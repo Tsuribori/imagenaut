@@ -44,7 +44,13 @@ class ThreadCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
         if self.user_is_banned():
             return redirect('dj-mod:moderation_ban_page')
         else:
+            self.board = get_object_or_404(Board, slug=kwargs['board'])
             return super(ThreadCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['board'] = self.board
+        return context
 
     def get_form_kwargs(self):
         kwargs = super(ThreadCreate, self).get_form_kwargs()
@@ -54,7 +60,7 @@ class ThreadCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
 
     def form_valid(self, form):
         form.instance.ip_address = self.get_remote_address()
-        form.instance.board = get_object_or_404(Board, slug=self.kwargs['board'])
+        form.instance.board = self.board
         return super(ThreadCreate, self).form_valid(form)
 
 class UserPostCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
@@ -65,8 +71,14 @@ class UserPostCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
         if self.user_is_banned():
             return redirect('dj-mod:moderation_ban_page')
         else:
+            self.thread = get_object_or_404(Thread, thread_number=kwargs['thread_number']) 
             return super(UserPostCreate, self).dispatch(request, *args, **kwargs)
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['thread'] = self.thread
+        return context    
+
     def get_form_kwargs(self):
         kwargs = super(UserPostCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
@@ -74,7 +86,7 @@ class UserPostCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
     
     def form_valid(self, form):
         form.instance.ip_address = self.get_remote_address()
-        form.instance.thread = get_object_or_404(Thread, thread_number=self.kwargs['thread_number'])
+        form.instance.thread = self.thread
         return super(UserPostCreate, self).form_valid(form)
 
 class ThreadDelete(DeleteView):
