@@ -38,7 +38,7 @@ class ThreadDetail(ListView):
 
 class ThreadCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
     form_class = ThreadForm
-    template_name = 'imageboard/userpost_form_page.html'
+    template_name = 'imageboard/thread_form_page.html'
 
     def dispatch(self, request, *args, **kwargs): #Check if the user is banned, redirect if true
         if self.user_is_banned():

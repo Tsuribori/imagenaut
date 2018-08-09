@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from datetime import timedelta
 from time import sleep
-from imagenaut.settings import LOGIN_REDIRECT_URL
+from django.conf import settings
 from imageboard.models import Board, Thread, UserPost
 from moderation.models import Transgression
 

@@ -15,7 +15,7 @@
     </div>
   {% endfor %}
 
-  {% include 'imageboard/userpost_form.html' with create_url=board.get_thread_create_url submit_button='Make thread' %}
+  {% include 'imageboard/thread_form.html' %}
 
   {% if is_paginated %}
     <div>

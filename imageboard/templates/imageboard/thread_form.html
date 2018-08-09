@@ -1,8 +1,8 @@
 <form
-  action="{{ thread.get_post_create_url }}"
+  action="{{ board.get_thread_create_url }}"
   method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">
-    Post</button>
+    Post Thread</button>
 </form>
