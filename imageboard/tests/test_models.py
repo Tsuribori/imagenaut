@@ -1,5 +1,6 @@
 from django.test import TestCase
 from imageboard.models import Board, Thread, UserPost
+from seed.factories import ThreadFactory, UserPostFactory
 # Create your tests here.
 
 class ModelTestCase(TestCase):
@@ -54,4 +55,18 @@ class ModelTestCase(TestCase):
         self.assertEqual(self.thread1.get_delete_url(), '/board/{}/{}/delete/'.format(self.board1.slug, self.thread1.thread_number))
         self.assertEqual(self.post1.get_delete_url(), '/board/{}/{}/{}/delete/'.format(
             self.board1.slug, self.thread1.thread_number, self.post1.post_number))
- 
+
+class SageTestCase(TestCase):
+
+    def setUp(self):
+        self.thread1 = ThreadFactory()
+        self.thread2 = ThreadFactory()
+        self.post1 = UserPostFactory(thread=self.thread1, sage=True) 
+
+    def test_sage(self):
+        self.assertGreater(self.thread2.bumb_order, self.thread1.bumb_order)
+
+    def test_no_sage(self):
+        self.post2 = UserPostFactory(thread=self.thread1)
+        self.assertGreater(self.thread1.bumb_order, self.thread2.bumb_order)
+

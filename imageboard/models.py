@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from datetime import datetime
+from django.utils import timezone
 # Create your models here.
 
 class DateMixin(): #Format the date in templates for thread and post
@@ -31,7 +32,7 @@ class Thread(models.Model, DateMixin):
     name = models.CharField(max_length=20, default='Anonymous')
     time_made = models.DateTimeField(auto_now_add=True)
     post = models.CharField(max_length=5000, blank=False)
-    bumb_order = models.DateTimeField(auto_now=True)
+    bumb_order = models.DateTimeField(auto_now_add=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField()
     def __str__(self):
@@ -59,6 +60,7 @@ class UserPost(models.Model, DateMixin):
     post = models.CharField(max_length=5000, blank=False)
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField()
+    sage = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.post_number)
@@ -69,7 +71,8 @@ class UserPost(models.Model, DateMixin):
         return reverse('imageboard_userpost_delete', kwargs={
             'board': self.thread.board.slug, 'thread_number': self.thread.thread_number, 'post_number': self.post_number})
     def save(self, *args, **kwargs):
-        self.thread.bumb_order=self.time_made
+        if self.sage==False:
+            self.thread.bumb_order=timezone.now()
         self.thread.save()
         super(UserPost, self).save(*args, **kwargs)
     class Meta:

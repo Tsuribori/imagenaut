@@ -33,7 +33,7 @@ class UserPostForm(forms.ModelForm, GetIPMixin, CooldownMixin):
     
     class Meta:
         model = UserPost
-        fields = ['name', 'post']
+        fields = ['name', 'sage', 'post']
         widgets = {
             'post': forms.Textarea(),
         }

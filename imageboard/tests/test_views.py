@@ -36,7 +36,7 @@ class ViewTestCase(SetUpMixin):
         resp = self.client.get(reverse('imageboard_thread_page', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'imageboard/thread.html')
-        self.assertTrue('thread' and 'form' in resp.context)
+        self.assertTrue('thread' and 'form' in resp.context) 
         
 
     def test_pagination(self): #Test that pagination works
@@ -79,6 +79,7 @@ class CreateViewTestCase(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTrue('form' in resp.context) 
         self.assertTrue('thread' in resp.context)
+        self.assertEqual(resp.context['form']['sage'].value(), False)
         self.assertTemplateUsed(resp, 'imageboard/userpost_form_page.html')
 
     def test_thread_form_post(self): #Test that threads can be made
