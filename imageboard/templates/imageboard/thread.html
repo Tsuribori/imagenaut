@@ -10,7 +10,7 @@
     <span>No. {{ thread.thread_number }}</span>
     <p>{{ thread.post }}</p>
   </div>
-  {% for post in thread.userpost_set.all %}
+  {% for post in thread.posts.all %}
     <div id={{ post.post_number }}>
       <span>{{ post.name }}</span>
       <span>{{ post.get_date }}</span>
@@ -19,6 +19,10 @@
     </div>
   {% endfor %}
   <div>
-    {% include "imageboard/userpost_form.html" %}
+    {% if thread.archived == False %}
+      {% include "imageboard/userpost_form.html" %}
+    {% else %}
+      <p>Thread archived. You cannot reply anymore.</p>
+    {% endif %}
   </div>
 {% endblock %} 

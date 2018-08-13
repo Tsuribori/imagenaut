@@ -7,6 +7,7 @@ from datetime import timedelta
 from time import sleep
 from imageboard.models import Board, Thread, UserPost
 from imageboard.forms import ThreadForm, UserPostForm
+from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory
 
 
 
@@ -27,16 +28,18 @@ class ViewTestCase(SetUpMixin):
    
 
     def test_board_url(self): #Test the board view
-        resp = self.client.get(reverse('imageboard_thread_list', kwargs={'board': self.board1.slug}))
+        resp = self.client.get(reverse('imageboard_thread_list', kwargs={'board': self.board1.slug})+'?page=3')
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'imageboard/board.html')
-        self.assertTrue('thread_list' in resp.context)
+        self.assertTrue('thread_list' in resp.context) 
+        self.assertContains(resp, self.thread1.post)
 
     def test_thread_url(self): #Test the thread view
         resp = self.client.get(reverse('imageboard_thread_page', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}))
         self.assertEqual(resp.status_code, 200)
         self.assertTemplateUsed(resp, 'imageboard/thread.html')
         self.assertTrue('thread' and 'form' in resp.context) 
+        self.assertContains(resp, self.post1.post)
         
 
     def test_pagination(self): #Test that pagination works
@@ -151,3 +154,17 @@ class DeleteViewTestCase(SetUpMixin):
        self.assertFalse(UserPost.objects.filter(post_number=self.post1.post_number).exists())
 
 
+class ArchivedViewTestCase(TestCase):
+ 
+    def setUp(self):
+        self.thread = ThreadFactory()
+        posts = UserPostFactory.create_batch(500, thread=self.thread)
+    
+    def test_thread_archived(self): #Test that the form is not displayed when thread archived
+        resp = self.client.get(self.thread.get_absolute_url)
+        self.assertTrue('form' not in resp.context)
+        
+
+    def test_thread_archived_no_posting(self): #Test that posting doesnt work when thread archived
+        resp = self.client.post(self.thread.get_post_create_url, {'post': faker.text()})
+        self.assertTrue(resp.status_code, 405)

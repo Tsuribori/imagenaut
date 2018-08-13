@@ -35,6 +35,9 @@ class Thread(models.Model, DateMixin):
     bumb_order = models.DateTimeField(auto_now_add=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     ip_address = models.GenericIPAddressField()
+    archived = models.BooleanField(default=False)
+    bumb_limit_reached = models.BooleanField(default=False)
+
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
     def get_absolute_url(self):
@@ -58,7 +61,7 @@ class UserPost(models.Model, DateMixin):
     name = models.CharField(max_length=20, default='Anonymous')
     time_made = models.DateTimeField(auto_now=True)
     post = models.CharField(max_length=5000, blank=False)
-    thread = models.ForeignKey(Thread, on_delete=models.CASCADE)
+    thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='posts')
     ip_address = models.GenericIPAddressField()
     sage = models.BooleanField(default=False)
 
@@ -70,9 +73,15 @@ class UserPost(models.Model, DateMixin):
     def get_delete_url(self):
         return reverse('imageboard_userpost_delete', kwargs={
             'board': self.thread.board.slug, 'thread_number': self.thread.thread_number, 'post_number': self.post_number})
+    
     def save(self, *args, **kwargs):
-        if self.sage==False:
+        if self.sage==False and self.thread.bumb_limit_reached==False:
             self.thread.bumb_order=timezone.now()
+        post_count = self.thread.posts.count() 
+        if post_count >= 499:
+            self.thread.archived = True
+        elif post_count >= 349:
+            self.thread.bumb_limit_reached = True
         self.thread.save()
         super(UserPost, self).save(*args, **kwargs)
     class Meta:

@@ -70,3 +70,20 @@ class SageTestCase(TestCase):
         self.post2 = UserPostFactory(thread=self.thread1)
         self.assertGreater(self.thread1.bumb_order, self.thread2.bumb_order)
 
+class ArchivedBumpLimitTestCase(TestCase):
+   
+    def setUp(self):
+        self.thread = ThreadFactory()
+        posts = UserPostFactory.create_batch(500, thread=self.thread)
+        self.thread2 = ThreadFactory()
+        posts2 = UserPostFactory.create_batch(350, thread=self.thread2)
+        post = UserPostFactory(thread=self.thread) #Make a post to test that bumb_order doesn't change
+
+    def test_archiving(self):
+        self.assertTrue(self.thread.archived)
+
+    def test_bumb_limit_reached(self):
+        self.assertTrue(self.thread2.bumb_limit_reached)
+
+    def test_bumb_limit_working(self):
+        self.assertGreater(self.thread2.bumb_order, self.thread.bumb_order)
