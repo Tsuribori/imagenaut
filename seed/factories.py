@@ -20,7 +20,7 @@ class ThreadFactory(factory.DjangoModelFactory):
 
     subject = faker.word()
     name = faker.name()
-    post = faker.text()
+    post = factory.LazyAttribute(lambda _: faker.text())
     board = factory.SubFactory(BoardFactory)
     ip_address = faker.ipv4()
     
@@ -30,7 +30,7 @@ class UserPostFactory(factory.DjangoModelFactory):
         model = UserPost
 
     name = faker.name()
-    post = faker.text()
+    post = factory.LazyAttribute(lambda _: faker.text())
     thread = factory.SubFactory(ThreadFactory)
     ip_address = faker.ipv4()
 

@@ -16,7 +16,7 @@ class ThreadList(ListView):
         return super(ThreadList, self).dispatch(request, *args, **kwargs)
         
     def get_queryset(self):  #Show only threads that belong to the board requested
-        return Thread.objects.filter(board=self.desired_board)
+        return Thread.objects.filter(board=self.desired_board, archived=False)
 
     def get_context_data(self, **kwargs):
        context = super().get_context_data(**kwargs)

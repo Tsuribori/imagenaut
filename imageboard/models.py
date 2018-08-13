@@ -33,7 +33,7 @@ class Thread(models.Model, DateMixin):
     time_made = models.DateTimeField(auto_now_add=True)
     post = models.CharField(max_length=5000, blank=False)
     bumb_order = models.DateTimeField(auto_now_add=True)
-    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='threads')
     ip_address = models.GenericIPAddressField()
     archived = models.BooleanField(default=False)
     bumb_limit_reached = models.BooleanField(default=False)
@@ -46,7 +46,15 @@ class Thread(models.Model, DateMixin):
         return reverse('imageboard_userpost_create', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
     def get_delete_url(self):
         return reverse('imageboard_thread_delete', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
-        
+    
+    def save(self, *args, **kwargs):
+        active_threads = Thread.objects.filter(board=self.board, archived=False).count()
+        if active_threads >= 100 and self.archived==False: #Prevent recursion by checking self.archived==False 
+            last_thread = Thread.objects.filter(board=self.board).earliest('bumb_order') #Get the last thread i.e. the one with the lowest bumb_order
+            last_thread.archived = True #Archive it
+            last_thread.save()
+        super(Thread, self).save(*args, **kwargs)
+
     class Meta:
         ordering = ['-bumb_order']
 
@@ -84,6 +92,7 @@ class UserPost(models.Model, DateMixin):
             self.thread.bumb_limit_reached = True
         self.thread.save()
         super(UserPost, self).save(*args, **kwargs)
+
     class Meta:
         ordering = ['post_number']
 

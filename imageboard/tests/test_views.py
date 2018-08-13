@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
@@ -153,8 +153,8 @@ class DeleteViewTestCase(SetUpMixin):
            'board': self.board1.slug, 'thread_number': self.thread1.thread_number}), status_code=302)
        self.assertFalse(UserPost.objects.filter(post_number=self.post1.post_number).exists())
 
-
-class ArchivedViewTestCase(TestCase):
+@tag('slow')
+class ArchivedPostViewTestCase(TestCase):
  
     def setUp(self):
         self.thread = ThreadFactory()
@@ -164,7 +164,25 @@ class ArchivedViewTestCase(TestCase):
         resp = self.client.get(self.thread.get_absolute_url)
         self.assertTrue('form' not in resp.context)
         
-
     def test_thread_archived_no_posting(self): #Test that posting doesnt work when thread archived
-        resp = self.client.post(self.thread.get_post_create_url, {'post': faker.text()})
+        resp = self.client.post(self.thread.get_post_create_url(), {'post': faker.text()})
         self.assertTrue(resp.status_code, 405)
+
+@tag('slow')
+class ArchivedThreadTestCase(TestCase):
+
+    def setUp(self):
+        self.board = BoardFactory()
+        self.thread = ThreadFactory(board=self.board)
+        threads = ThreadFactory.create_batch(100, board=self.board)
+        self.thread.refresh_from_db()
+
+    def test_thread_archived_threads(self):
+        resp = self.client.get('{}?page=10'.format(self.board.get_absolute_url()))
+        self.assertNotContains(resp, self.thread.post)
+
+    def test_thread_archived_threads_no_posting(self):
+        resp = self.client.post(self.thread.get_post_create_url(), {'post': faker.text()})
+        self.assertTrue(resp.status_code, 405)
+        
+        

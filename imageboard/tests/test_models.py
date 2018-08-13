@@ -1,6 +1,6 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 from imageboard.models import Board, Thread, UserPost
-from seed.factories import ThreadFactory, UserPostFactory
+from seed.factories import BoardFactory, ThreadFactory, UserPostFactory
 # Create your tests here.
 
 class ModelTestCase(TestCase):
@@ -61,7 +61,8 @@ class SageTestCase(TestCase):
     def setUp(self):
         self.thread1 = ThreadFactory()
         self.thread2 = ThreadFactory()
-        self.post1 = UserPostFactory(thread=self.thread1, sage=True) 
+        self.post1 = UserPostFactory(thread=self.thread1, sage=True)
+        self.thread1.refresh_from_db() 
 
     def test_sage(self):
         self.assertGreater(self.thread2.bumb_order, self.thread1.bumb_order)
@@ -70,7 +71,8 @@ class SageTestCase(TestCase):
         self.post2 = UserPostFactory(thread=self.thread1)
         self.assertGreater(self.thread1.bumb_order, self.thread2.bumb_order)
 
-class ArchivedBumpLimitTestCase(TestCase):
+@tag('slow')
+class ArchivedBumpLimit(TestCase):
    
     def setUp(self):
         self.thread = ThreadFactory()
@@ -87,3 +89,17 @@ class ArchivedBumpLimitTestCase(TestCase):
 
     def test_bumb_limit_working(self):
         self.assertGreater(self.thread2.bumb_order, self.thread.bumb_order)
+
+@tag('slow')
+class ArchivalOnThreadLimit(TestCase): #Test that old threads are "bumbed off" when a new thread is made
+ 
+    def setUp(self):
+        self.board = BoardFactory()
+        self.old_thread = ThreadFactory(board=self.board)
+        threads = ThreadFactory.create_batch(100, board=self.board) #Make enough new threads to archive the old
+        self.old_thread.refresh_from_db() #Get the refreshed data 
+
+
+    def test_bumping_off(self): 
+        self.assertTrue(self.old_thread.archived)
+
