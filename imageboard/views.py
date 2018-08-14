@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect
+from django.db.models import Prefetch
 from .models import Board, Thread, UserPost
 from .forms import ThreadForm, UserPostForm
 from .utils import GetIPMixin, BanMixin, CooldownMixin
@@ -12,11 +13,11 @@ class ThreadList(ListView):
     paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs): #Three lines of code to adhere to DRY and maybe optimize database access?
-        self.desired_board = get_object_or_404(Board, slug=kwargs['board'])
+        self.desired_board = get_object_or_404(Board.objects.prefetch_related(Prefetch('threads', to_attr='cached_threads')), slug=kwargs['board'])
         return super(ThreadList, self).dispatch(request, *args, **kwargs)
         
-    def get_queryset(self):  #Show only threads that belong to the board requested
-        return Thread.objects.filter(board=self.desired_board, archived=False)
+    def get_queryset(self):  #Show only threads that belong to the board requested 
+        return self.desired_board.cached_threads
 
     def get_context_data(self, **kwargs):
        context = super().get_context_data(**kwargs)
@@ -30,7 +31,7 @@ class ThreadDetail(ListView):
     context_object_name = 'thread'
     template_name = 'imageboard/thread.html' 
     def get_queryset(self):
-        return get_object_or_404(Thread, thread_number=self.kwargs['thread_number'])
+        return get_object_or_404(Thread.objects.prefetch_related(Prefetch('posts', to_attr='cached_posts')), thread_number=self.kwargs['thread_number'])
     def get_context_data(self, **kwargs):
        context = super().get_context_data(**kwargs)
        context['form'] = UserPostForm

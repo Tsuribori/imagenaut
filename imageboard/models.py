@@ -2,6 +2,8 @@ from django.db import models
 from django.urls import reverse
 from datetime import datetime
 from django.utils import timezone
+#from django.utils.functional import cached_property
+
 # Create your models here.
 
 class DateMixin(): #Format the date in templates for thread and post
@@ -40,6 +42,7 @@ class Thread(models.Model, DateMixin):
 
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
+
     def get_absolute_url(self):
         return reverse('imageboard_thread_page', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
     def get_post_create_url(self):
@@ -57,6 +60,9 @@ class Thread(models.Model, DateMixin):
 
     class Meta:
         ordering = ['-bumb_order']
+        indexes = [
+            models.Index(fields=['thread_number']),
+        ]
 
 class UserPost(models.Model, DateMixin):
     def get_post_number():

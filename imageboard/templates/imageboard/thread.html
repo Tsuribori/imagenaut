@@ -10,7 +10,7 @@
     <span>No. {{ thread.thread_number }}</span>
     <p>{{ thread.post }}</p>
   </div>
-  {% for post in thread.posts.all %}
+  {% for post in thread.cached_posts %}
     <div id={{ post.post_number }}>
       <span>{{ post.name }}</span>
       <span>{{ post.get_date }}</span>
