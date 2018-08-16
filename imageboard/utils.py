@@ -1,6 +1,7 @@
 from django.conf import settings 
 from .models import Thread, UserPost
 from moderation.models import Transgression
+from imageboard.models import Board
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import timedelta
@@ -24,16 +25,21 @@ class GetIPMixin(): #Get the user IP
 
 class BanMixin():
 
-    def user_is_banned(self): #Return true if ban found for ip, false if not found
-        ip_addr = self.get_remote_address()
-        bans = Transgression.objects.filter(ip_address__iexact=ip_addr)
-        ban_list = []
-        for ban in bans:
-            if ban.banned_until < timezone.now():  #Delete bans that have expired
-                ban.delete()
-            else:
-                ban_list.append(ban.banned_until)
-        return len(ban_list) > 0
+    def user_is_banned(self, board): #Return true if ban found for ip, false if not found
+        try:
+            if self.request:
+                ip_addr = self.get_remote_address()
+                bans = Transgression.objects.filter(ip_address__iexact=ip_addr)
+                ban_list = []
+                for ban in bans:
+                    if ban.banned_until < timezone.now():  #Delete bans that have expired
+                        ban.delete()
+                    elif ban.global_ban == True or ban.banned_from == board: #
+                        ban_list.append(ban.banned_until)
+                return len(ban_list) > 0
+        
+        except AttributeError:
+            return None
         
 
 class CooldownMixin():

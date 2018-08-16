@@ -26,17 +26,27 @@ class GetIPMixinTestCase(TestCase, GetIPMixin):
 class BanMixinTestCase(TestCase, GetIPMixin, BanMixin):
 
     def setUp(self):
-        resp = self.client.get(reverse('dj-mod:login'))
-        self.request = resp.wsgi_request
         self.board = BoardFactory()
+        self.board2 = BoardFactory()
+        resp = self.client.get(reverse('dj-mod:login'))
+        self.request = resp.wsgi_request 
         self.thread = ThreadFactory(ip_address=self.get_remote_address())
+       
     
     def test_ban_false(self):
-        self.assertFalse(self.user_is_banned())
+        self.assertFalse(self.user_is_banned(self.board))
 
-    def test_ban_true(self):
-        ban = TransgressionFactory(ip_address=self.thread.ip_address)
-        self.assertTrue(self.user_is_banned())
+    def test_global_ban_true(self):
+        ban = TransgressionFactory(ip_address=self.thread.ip_address, global_ban=True)
+        self.assertTrue(self.user_is_banned(self.board))
+
+    def test_board_ban_true(self):
+        ban = TransgressionFactory(ip_address=self.thread.ip_address, banned_from=self.board)
+        self.assertTrue(self.user_is_banned(self.board))
+
+    def test_ban_in_another_board(self):
+        ban = TransgressionFactory(ip_address=self.thread.ip_address, banned_from=self.board2)
+        self.assertFalse(self.user_is_banned(self.board))
 
 class CooldownMixinTestCase(TestCase, GetIPMixin, CooldownMixin):
     

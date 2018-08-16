@@ -42,10 +42,10 @@ class ThreadCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
     template_name = 'imageboard/thread_form_page.html'
 
     def dispatch(self, request, *args, **kwargs): #Check if the user is banned, redirect if true
-        if self.user_is_banned():
+        self.board = get_object_or_404(Board, slug=kwargs['board'])
+        if self.user_is_banned(self.board):
             return redirect('dj-mod:moderation_ban_page')
         else:
-            self.board = get_object_or_404(Board, slug=kwargs['board'])
             return super(ThreadCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -69,10 +69,10 @@ class UserPostCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
     template_name = 'imageboard/userpost_form_page.html'
 
     def dispatch(self, request, *args, **kwargs): #Check if the user is banned, redirect if true
-        if self.user_is_banned():
+        self.thread = get_object_or_404(Thread, thread_number=kwargs['thread_number'])
+        if self.user_is_banned(self.thread.board):
             return redirect('dj-mod:moderation_ban_page')
         else:
-            self.thread = get_object_or_404(Thread, thread_number=kwargs['thread_number']) 
             return super(UserPostCreate, self).dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):

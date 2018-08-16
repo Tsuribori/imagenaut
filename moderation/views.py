@@ -20,6 +20,8 @@ class ThreadBanCreate(CreateView):
 
     def form_valid(self, form):
         form.instance.ip_address = self.thread.ip_address
+        if form.instance.global_ban == False:
+            form.instance.banned_from = self.thread.board
         return super(ThreadBanCreate, self).form_valid(form)
 
 class UserPostBanCreate(CreateView):
@@ -35,6 +37,8 @@ class UserPostBanCreate(CreateView):
 
     def form_valid(self, form):
         form.instance.ip_address = self.userpost.ip_address
+        if form.instance.global_ban == False:
+            form.instance.banned_from = self.userpost.thread.board
         return super(UserPostBanCreate, self).form_valid(form)
 
 class TransgressionList(ListView, GetIPMixin): #Ban page that shows user bans

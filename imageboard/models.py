@@ -49,7 +49,9 @@ class Thread(models.Model, DateMixin):
         return reverse('imageboard_userpost_create', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
     def get_delete_url(self):
         return reverse('imageboard_thread_delete', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
-    
+    def get_ban_url(self):
+        return reverse('dj-mod:moderation_thread_ban', kwargs={'thread_number': self.thread_number})
+ 
     def save(self, *args, **kwargs):
         active_threads = Thread.objects.filter(board=self.board, archived=False).count()
         if active_threads >= 100 and self.archived==False: #Prevent recursion by checking self.archived==False 
@@ -87,6 +89,8 @@ class UserPost(models.Model, DateMixin):
     def get_delete_url(self):
         return reverse('imageboard_userpost_delete', kwargs={
             'board': self.thread.board.slug, 'thread_number': self.thread.thread_number, 'post_number': self.post_number})
+    def get_ban_url(self):
+        return reverse('dj-mod:moderation_userpost_ban', kwargs={'post_number': self.post_number})
     
     def save(self, *args, **kwargs):
         if self.sage==False and self.thread.bumb_limit_reached==False:

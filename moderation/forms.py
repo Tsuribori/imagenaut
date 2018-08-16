@@ -7,7 +7,7 @@ from .models import Transgression
 class TransgressionForm(forms.ModelForm):
     class Meta:
         model = Transgression
-        fields = ['reason', 'banned_until']
+        fields = ['reason', 'banned_until', 'global_ban']
         widgets = {
             'reason': forms.Textarea(),
             'banned_until': forms.DateTimeInput(),

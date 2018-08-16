@@ -41,3 +41,4 @@ class TransgressionFactory(factory.DjangoModelFactory):
     ip_address =  faker.ipv4()
     banned_until = faker.future_date(tzinfo=pytz.utc)
     reason = faker.text(max_nb_chars=150) #Need to set max character limit, as default for faker is max_nb_chars=200, which is over the model defined limit
+    banned_from = factory.SubFactory(BoardFactory)
