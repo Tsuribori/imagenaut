@@ -5,7 +5,13 @@
   {% if transgression_list %}
     <h3>You have the following ban{{ transgression_list.all|pluralize }}:</h3>
       {% for transgression in transgression_list %}
-        <p>You were banned for: 
+        <p>You were banned from 
+          {% if transgression.global_ban %}
+            all boards
+          {% elif transgression.banned_from %}
+            /{{ transgression.banned_from.slug }}/ : {{ transgression.banned_from.name }}
+          {% endif %}
+          for: 
           {{ transgression.reason }} <br>
           This ban will expire on {{ transgression.banned_until|date:"H:i, j.n.o" }}, 
           which is {{ transgression.banned_until|timeuntil }} from now.
