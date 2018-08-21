@@ -9,15 +9,42 @@
       <span>{{ thread.name }}</span>
       <span>{{ thread.get_date }}</span>
       <span>No. {{ thread.thread_number }}</span>
+      {% if moderation_view == False %}
+        <a href="{{ thread.get_report_url }}">
+          Report</a>
+      {% endif %}
+      {% if perms.organizer.add_transgression %}
+        <a href="{{ thread.get_ban_url }}">
+          Ban</a>
+      {% endif %}
+      {% if perms.organizer.delete_thread %}
+        <a href="{{ thread.get_delete_url }}">
+          Delete</a>
+      {% endif %}
       <p>{{ thread.post }}</p>
+      {% with post_count=thread.posts.count %}
+        <span>{{ post_count }} repl{{ post_count|pluralize:"y,ies" }}</span>
+      {% endwith %}
       <a href="{{ thread.get_absolute_url }}">
         View Thread</a>
-    </div>
+          </div>
   {% endfor %}
+ 
+  {% if moderation_view == False %}
+    {% include 'imageboard/thread_form.html' %}
+  {% endif %}
 
-  {% include 'imageboard/thread_form.html' %}
+  {% if is_paginated and moderation_board_url %}
+    <div>
+      {% for page_number in page_obj.paginator.page_range %}
+          <a href="{{ moderation_board_url }}&{{ page_url|cut:"?" }}{{page_number}}">
+            [{{ page_number }}]</a>
+      {% endfor %}
+    </div>
 
-  {% if is_paginated %}
+  {% endif %}
+
+  {% if is_paginated and not moderation_board_url %}
     <div>
       {% for page_number in page_obj.paginator.page_range %}
           <a href="{{ page_url }}{{page_number}}">

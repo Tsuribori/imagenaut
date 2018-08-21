@@ -60,6 +60,11 @@ class ModelTestCase(TestCase):
         self.assertEqual(self.thread1.get_ban_url(), '/mod/thread/{}/ban/'.format(self.thread1.thread_number))
         self.assertEqual(self.post1.get_ban_url(), '/mod/post/{}/ban/'.format(self.post1.post_number))
 
+    def test_report_urls(self):
+        self.assertEqual(self.thread1.get_report_url(), '/board/{}/{}/report/'.format(self.board1.slug, self.thread1.thread_number))
+        self.assertEqual(self.post1.get_report_url(), '/board/{}/{}/{}/report/'.format(
+            self.board1.slug, self.thread1.thread_number, self.post1.post_number))
+
 class SageTestCase(TestCase):
 
     def setUp(self):

@@ -1,9 +1,9 @@
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Prefetch
 from .models import Board, Thread, UserPost
 from .forms import ThreadForm, UserPostForm
 from .utils import GetIPMixin, BanMixin, CooldownMixin
-from django.views.generic import ListView, CreateView, DeleteView
+from django.views.generic import View, ListView, CreateView, DeleteView
 # Create your views here.
 
 class ThreadList(ListView):
@@ -13,7 +13,8 @@ class ThreadList(ListView):
     paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs): #Three lines of code to adhere to DRY and maybe optimize database access?
-        self.desired_board = get_object_or_404(Board.objects.prefetch_related(Prefetch('threads', to_attr='cached_threads')), slug=kwargs['board'])
+        self.desired_board = get_object_or_404(Board.objects.prefetch_related(
+            Prefetch('threads', to_attr='cached_threads')), slug=kwargs['board'])
         return super(ThreadList, self).dispatch(request, *args, **kwargs)
         
     def get_queryset(self):  #Show only threads that belong to the board requested 
@@ -24,6 +25,7 @@ class ThreadList(ListView):
        context['page_url'] = '?page='
        context['form'] = ThreadForm
        context['board'] = self.desired_board
+       context['moderation_view'] = False
        return context       
 
 class ThreadDetail(ListView):
@@ -117,3 +119,31 @@ class UserPostDelete(DeleteView):
     
     def get_success_url(self):
         return self.userpost.thread.get_absolute_url()
+
+class ThreadReport(View):
+    template_name = 'imageboard/thread_report_confirm.html'
+
+    def get(self, request, *args, **kwargs):
+        thread = get_object_or_404(Thread, thread_number=kwargs['thread_number'])
+        return render(request, self.template_name,  {'thread': thread})
+
+    def post(self, request, *args, **kwargs):
+        thread = get_object_or_404(Thread, thread_number=kwargs['thread_number'])
+        thread.reported = True
+        thread.save()
+        return redirect(thread)
+
+class UserPostReport(View):
+    template_name = 'imageboard/userpost_report_confirm.html'
+
+    def get(self, request, *args, **kwargs):
+        post = get_object_or_404(UserPost, post_number=kwargs['post_number'])
+        return render(request, self.template_name, {'userpost': post})
+
+    def post(self, request, *args, **kwargs):
+        post = get_object_or_404(UserPost, post_number=kwargs['post_number'])
+        post.reported = True
+        post.save()
+        return redirect(post)
+
+

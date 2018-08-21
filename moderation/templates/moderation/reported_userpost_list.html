@@ -1,0 +1,42 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+
+{% block img_content %}
+  {% for post in post_list %}
+    <div id={{ post.post_number }}>
+      <span>{{ post.name }}</span>
+      <span>{{ post.get_date }}</span>
+      <span>No. {{ post.post_number }}</span>
+      {% if perms.organizer.add_transgression %}
+        <a href="{{ post.get_ban_url }}">
+          Ban</a>
+      {% endif %}
+      {% if perms.organizer.delete_userpost %}
+        <a href="{{ post.get_delete_url }}">
+          Delete</a>
+      {% endif %}
+      <p>{{ post.post }}</p>
+    </div>
+  {% empty %}
+    <h3>No reported posts for board.</h3>
+  {% endfor %}
+
+  {% if is_paginated and moderation_board_url %}
+    <div>
+      {% for page_number in page_obj.paginator.page_range %}
+          <a href="{{ moderation_board_url }}&{{ page_url|cut:"?" }}{{page_number}}">
+            [{{ page_number }}]</a>
+      {% endfor %}
+    </div>
+
+  {% endif %}
+
+  {% if is_paginated and not moderation_board_url %}
+    <div>
+      {% for page_number in page_obj.paginator.page_range %}
+          <a href="{{ page_url }}{{page_number}}">
+            [{{ page_number }}]</a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+{% endblock %} 

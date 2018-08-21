@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -166,4 +166,119 @@ class LoginViewTestCase(TestCase):
         resp = self.client.get(reverse('dj-mod:logout'))
         self.assertTemplateUsed(resp, 'moderation/logged_out.html')
         self.assertNotEqual(resp.context['user'], self.user1)
+
+
+class ThreadReportTestCase(TestCase):
+ 
+    def setUp(self):
+       self.board = BoardFactory()
+       self.board2 = BoardFactory()
+       self.threads = ThreadFactory.create_batch(5, reported=True, board=self.board)
+       self.threads2 = ThreadFactory.create_batch(5, reported=True, board=self.board2)
+       self.resp_get_all = self.client.get(reverse('dj-mod:moderation_thread_report_list'))
+       self.resp_get_board = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_thread_report_list'), self.board.slug))
+           
+
+    def test_view_works(self):
+       self.assertEqual(self.resp_get_all.status_code, 200)
+       self.assertEqual(self.resp_get_board.status_code, 200)
+       
+    def test_template(self):
+        self.assertTemplateUsed(self.resp_get_all, 'imageboard/board.html')
+
+    def test_context(self):
+        self.assertTrue(self.resp_get_all.context['moderation_view'])
+        self.assertTrue('thread_list' in self.resp_get_all.context)
+        self.assertEqual(self.resp_get_board.context['moderation_board_url'], '?board={}'.format(self.board.slug))
+
+    def test_all_reports_shown(self): 
+        for thread in self.threads:
+            self.assertContains(self.resp_get_all, thread.post)
+        for thread in self.threads2:
+            self.assertContains(self.resp_get_all, thread.post)
+
+    def test_reports_board_specific(self):
+        for thread in self.threads:
+            self.assertContains(self.resp_get_board, thread.post)
+        for thread in self.threads2:
+            self.assertNotContains(self.resp_get_board, thread.post)
+
+
+        
+class ThreadReportPagination(TestCase):
+
+    def setUp(self):
+        self.board = BoardFactory()
+        self.last_thread = ThreadFactory(reported=True, board=self.board)
+        self.threads = ThreadFactory.create_batch(150, reported=True, board=self.board)
+        self.resp = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_thread_report_list'), self.board.slug))
+        self.resp2 = self.client.get('{}?board={}&page=2'.format(reverse('dj-mod:moderation_thread_report_list'), self.board.slug))
+
+    def test_link_in_page(self):
+        self.assertContains(self.resp, "<a href='?board={}&page=2'>[2]</a>".format(self.board.slug), html=True)
+
+ 
+    def test_first_page(self):
+        for thread in self.threads:
+            self.assertContains(self.resp, thread.post)
+
+    def test_last_page(self):
+        self.assertContains(self.resp2, self.last_thread.post)
+
+class UserPostReportTestCase(TestCase):
+ 
+    def setUp(self):
+       self.board = BoardFactory()
+       self.board2 = BoardFactory()
+       self.thread = ThreadFactory(board=self.board)
+       self.thread2 = ThreadFactory(board=self.board2)
+       self.posts = UserPostFactory.create_batch(5, thread=self.thread, reported=True)
+       self.posts2 = UserPostFactory.create_batch(5, thread=self.thread2, reported=True)
+       self.resp_get_all = self.client.get(reverse('dj-mod:moderation_userpost_report_list'))
+       self.resp_get_board = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_userpost_report_list'), self.board.slug))
+           
+
+    def test_view_works(self):
+       self.assertEqual(self.resp_get_all.status_code, 200)
+       self.assertEqual(self.resp_get_board.status_code, 200)
+       
+    def test_template(self):
+        self.assertTemplateUsed(self.resp_get_all, 'moderation/reported_userpost_list.html')
+
+    def test_context(self): 
+        self.assertTrue('post_list' in self.resp_get_all.context)
+        self.assertEqual(self.resp_get_board.context['moderation_board_url'], '?board={}'.format(self.board.slug))
+
+    def test_all_reports_shown(self): 
+        for post in self.posts:
+            self.assertContains(self.resp_get_all, post.post)
+        for post in self.posts2:
+            self.assertContains(self.resp_get_all, post.post)
+
+    def test_reports_board_specific(self):
+        for post in self.posts:
+            self.assertContains(self.resp_get_board, post.post)
+        for post in self.posts2:
+            self.assertNotContains(self.resp_get_board, post.post)
+
+class UserPostReportPagination(TestCase):
+
+    def setUp(self):
+        self.board = BoardFactory()
+        self.thread = ThreadFactory(board=self.board)
+        self.posts = UserPostFactory.create_batch(150, reported=True, thread=self.thread)
+        self.last_post = UserPostFactory(reported=True, thread=self.thread)
+        self.resp = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_userpost_report_list'), self.board.slug))
+        self.resp2 = self.client.get('{}?board={}&page=2'.format(reverse('dj-mod:moderation_userpost_report_list'), self.board.slug))
+
+    def test_link_in_page(self):
+        self.assertContains(self.resp, "<a href='?board={}&page=2'>[2]</a>".format(self.board.slug), html=True)
+
+ 
+    def test_first_page(self):
+        for post in self.posts:
+            self.assertContains(self.resp, post.post)
+
+    def test_last_page(self):
+        self.assertContains(self.resp2, self.last_post.post)
 

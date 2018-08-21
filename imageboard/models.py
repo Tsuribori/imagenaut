@@ -38,7 +38,8 @@ class Thread(models.Model, DateMixin):
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='threads')
     ip_address = models.GenericIPAddressField()
     archived = models.BooleanField(default=False)
-    bumb_limit_reached = models.BooleanField(default=False)
+    bumb_limit_reached = models.BooleanField(default=False) 
+    reported = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
@@ -51,6 +52,8 @@ class Thread(models.Model, DateMixin):
         return reverse('imageboard_thread_delete', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
     def get_ban_url(self):
         return reverse('dj-mod:moderation_thread_ban', kwargs={'thread_number': self.thread_number})
+    def get_report_url(self):
+        return reverse('imageboard_thread_report', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
  
     def save(self, *args, **kwargs):
         active_threads = Thread.objects.filter(board=self.board, archived=False).count()
@@ -80,6 +83,7 @@ class UserPost(models.Model, DateMixin):
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='posts')
     ip_address = models.GenericIPAddressField()
     sage = models.BooleanField(default=False)
+    reported = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.post_number)
@@ -91,6 +95,9 @@ class UserPost(models.Model, DateMixin):
             'board': self.thread.board.slug, 'thread_number': self.thread.thread_number, 'post_number': self.post_number})
     def get_ban_url(self):
         return reverse('dj-mod:moderation_userpost_ban', kwargs={'post_number': self.post_number})
+    def get_report_url(self):
+        return reverse('imageboard_userpost_report', kwargs={
+            'board': self.thread.board.slug, 'thread_number': self.thread.thread_number, 'post_number': self.post_number})
     
     def save(self, *args, **kwargs):
         if self.sage==False and self.thread.bumb_limit_reached==False:

@@ -8,6 +8,16 @@
     <span>{{ thread.name }}</span>
     <span>{{ thread.get_date }}</span>
     <span>No. {{ thread.thread_number }}</span>
+    <a href="{{ thread.get_report_url }}">
+      Report</a>
+    {% if perms.organizer.add_transgression %}
+      <a href="{{ thread.get_ban_url }}">
+        Ban</a>
+    {% endif %}
+    {% if perms.organizer.delete_thread %}
+      <a href="{{ thread.get_delete_url }}">
+        Delete</a>
+    {% endif %}
     <p>{{ thread.post }}</p>
   </div>
   {% for post in thread.cached_posts %}
@@ -15,6 +25,16 @@
       <span>{{ post.name }}</span>
       <span>{{ post.get_date }}</span>
       <span>No. {{ post.post_number }}</span>
+      <a href="{{ post.get_report_url }}">
+        Report</a>
+      {% if perms.organizer.add_transgression %}
+        <a href="{{ post.get_ban_url }}">
+          Ban</a>
+      {% endif %}
+      {% if perms.organizer.delete_userpost %}
+        <a href="{{ post.get_delete_url }}">
+          Delete</a>
+      {% endif %}
       <p>{{ post.post }}</p>
     </div>
   {% endfor %}

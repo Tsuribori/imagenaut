@@ -1,0 +1,21 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+
+{% block img_content %}
+  <div>
+    <form 
+      action="{{ userpost.get_report_url }}"
+      method="post">
+    {% csrf_token %}
+      <p>Are you sure you want to report
+        post No. {{ userpost.post_number }}? Please ensure that the post in question breaks the rules.
+      </p>
+      
+      <a href="{{ userpost.get_absolute_url }}">
+        Cancel</a>
+
+      <button type="submit">Report Post</button>
+      
+    </form>
+  </div>
+{% endblock %}
+

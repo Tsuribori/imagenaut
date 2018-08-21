@@ -33,6 +33,7 @@ class ViewTestCase(SetUpMixin):
         self.assertTemplateUsed(resp, 'imageboard/board.html')
         self.assertTrue('thread_list' in resp.context) 
         self.assertContains(resp, self.thread1.post)
+        self.assertFalse(resp.context['moderation_view'])
 
     def test_thread_url(self): #Test the thread view
         resp = self.client.get(reverse('imageboard_thread_page', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}))
@@ -185,4 +186,51 @@ class ArchivedThreadTestCase(TestCase):
         resp = self.client.post(self.thread.get_post_create_url(), {'post': faker.text()})
         self.assertTrue(resp.status_code, 405)
         
+       
+
+class ThreadReportTestCase(TestCase):
+
+    def setUp(self):
+        self.thread = ThreadFactory()
+        self.get_resp = self.client.get(self.thread.get_report_url())
+        self.post_resp = self.client.post(self.thread.get_report_url())
+        self.thread.refresh_from_db()
+
+    def test_template_used(self):
+        self.assertTemplateUsed(self.get_resp, 'imageboard/thread_report_confirm.html')
         
+    def test_context(self):
+        self.assertTrue('thread' in self.get_resp.context)
+
+    def test_context_correct(self):
+        self.assertEqual(self.get_resp.context['thread'], self.thread)
+        
+    def test_redirect(self):
+        self.assertRedirects(self.post_resp, expected_url=self.thread.get_absolute_url(), status_code=302)
+
+    def test_thread_reported(self):
+        self.assertTrue(self.thread.reported)
+
+class UserPostReportTestCase(TestCase):
+
+    def setUp(self):
+        self.post = UserPostFactory()
+        self.get_resp = self.client.get(self.post.get_report_url())
+        self.post_resp = self.client.post(self.post.get_report_url())
+        self.post.refresh_from_db()
+
+    def test_template_used(self):
+        self.assertTemplateUsed(self.get_resp, 'imageboard/userpost_report_confirm.html')
+        
+    def test_context(self):
+        self.assertTrue('userpost' in self.get_resp.context)
+
+    def test_context_correct(self):
+        self.assertEqual(self.get_resp.context['userpost'], self.post)
+        
+    def test_redirect(self):
+        self.assertRedirects(self.post_resp, expected_url=self.post.get_absolute_url(), status_code=302)
+
+    def test_thread_reported(self):
+        self.assertTrue(self.post.reported)
+

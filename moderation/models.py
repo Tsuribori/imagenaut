@@ -12,4 +12,5 @@ class Transgression(models.Model):
  
     def __str__(self):
         return "{}: {}".format(self.ip_address, self.banned_until)
-     
+    
+ 

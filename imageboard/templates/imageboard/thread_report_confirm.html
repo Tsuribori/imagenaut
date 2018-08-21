@@ -1,0 +1,21 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+
+{% block img_content %}
+  <div>
+    <form 
+      action="{{ thread.get_report_url }}"
+      method="post">
+    {% csrf_token %}
+      <p>Are you sure you want to report
+        thread No. {{ thread.thread_number }}? Please ensure that the thread in question breaks the rules.
+      </p>
+      
+      <a href="{{ thread.get_absolute_url }}">
+        Cancel</a>
+
+      <button type="submit">Report Thread</button>
+      
+    </form>
+  </div>
+{% endblock %}
+
