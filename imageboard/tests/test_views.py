@@ -175,17 +175,21 @@ class ArchivedThreadTestCase(TestCase):
     def setUp(self):
         self.board = BoardFactory()
         self.thread = ThreadFactory(board=self.board)
-        threads = ThreadFactory.create_batch(100, board=self.board)
+        self.thread2 = ThreadFactory(board=self.board)
+        threads = ThreadFactory.create_batch(110, board=self.board)
         self.thread.refresh_from_db()
 
     def test_thread_archived_threads(self):
         resp = self.client.get('{}?page=10'.format(self.board.get_absolute_url()))
-        self.assertNotContains(resp, self.thread.post)
+        self.assertNotContains(resp, self.thread2.post)
+
+    def test_no_extra_pages(self):
+        resp = self.client.get('{}?page=11'.format(self.board.get_absolute_url()))
+        self.assertEqual(resp.status_code, 404)
 
     def test_thread_archived_threads_no_posting(self):
         resp = self.client.post(self.thread.get_post_create_url(), {'post': faker.text()})
         self.assertTrue(resp.status_code, 405)
-        
        
 
 class ThreadReportTestCase(TestCase):

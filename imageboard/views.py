@@ -14,7 +14,7 @@ class ThreadList(ListView):
 
     def dispatch(self, request, *args, **kwargs): #Three lines of code to adhere to DRY and maybe optimize database access?
         self.desired_board = get_object_or_404(Board.objects.prefetch_related(
-            Prefetch('threads', to_attr='cached_threads')), slug=kwargs['board'])
+            Prefetch('threads', queryset=Thread.objects.filter(archived=False), to_attr='cached_threads')), slug=kwargs['board'])
         return super(ThreadList, self).dispatch(request, *args, **kwargs)
         
     def get_queryset(self):  #Show only threads that belong to the board requested 

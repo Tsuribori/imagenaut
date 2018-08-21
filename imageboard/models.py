@@ -58,7 +58,7 @@ class Thread(models.Model, DateMixin):
     def save(self, *args, **kwargs):
         active_threads = Thread.objects.filter(board=self.board, archived=False).count()
         if active_threads >= 100 and self.archived==False: #Prevent recursion by checking self.archived==False 
-            last_thread = Thread.objects.filter(board=self.board).earliest('bumb_order') #Get the last thread i.e. the one with the lowest bumb_order
+            last_thread = Thread.objects.filter(board=self.board, archived=False).earliest('bumb_order') #Get the last thread i.e. the one with the lowest bumb_order
             last_thread.archived = True #Archive it
             last_thread.save()
         super(Thread, self).save(*args, **kwargs)

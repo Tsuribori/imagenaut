@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.conf import settings
@@ -204,7 +204,7 @@ class ThreadReportTestCase(TestCase):
             self.assertNotContains(self.resp_get_board, thread.post)
 
 
-        
+@tag('slow')      
 class ThreadReportPagination(TestCase):
 
     def setUp(self):
@@ -261,6 +261,7 @@ class UserPostReportTestCase(TestCase):
         for post in self.posts2:
             self.assertNotContains(self.resp_get_board, post.post)
 
+@tag('slow')
 class UserPostReportPagination(TestCase):
 
     def setUp(self):
