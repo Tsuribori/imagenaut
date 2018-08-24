@@ -283,3 +283,55 @@ class UserPostReportPagination(TestCase):
     def test_last_page(self):
         self.assertContains(self.resp2, self.last_post.post)
 
+class ThreadReportDismissView(TestCase):
+
+    def setUp(self):
+        self.thread = ThreadFactory(reported=True)
+        self.resp_get = self.client.get(self.thread.get_report_dismiss_url())
+        self.resp_post = self.client.post(self.thread.get_report_dismiss_url())
+
+    def test_report_dismiss_view_works(self):
+        self.assertEqual(self.resp_get.status_code, 200)
+
+    def test_report_dismiss_template(self):
+        self.assertTemplateUsed(self.resp_get, 'moderation/report_confirm_delete.html')
+
+    def test_report_dimiss_context(self):
+        self.assertEqual(self.resp_get.context['object'], self.thread)
+
+    def test_report_dismiss_contains(self):
+        self.assertContains(self.resp_get, self.thread.thread_number)
+
+    def test_report_dismiss_redirect(self):
+        self.assertRedirects(self.resp_post, expected_url=reverse('dj-mod:moderation_thread_report_list'), status_code=302)
+
+    def test_report_dismissed(self):
+        self.thread.refresh_from_db()
+        self.assertFalse(self.thread.reported) 
+
+class UserPostReportDismissView(TestCase):
+
+    def setUp(self):
+        self.post = UserPostFactory(reported=True)
+        self.resp_get = self.client.get(self.post.get_report_dismiss_url())
+        self.resp_post = self.client.post(self.post.get_report_dismiss_url())
+
+    def test_report_dismiss_view_works(self):
+        self.assertEqual(self.resp_get.status_code, 200)
+
+    def test_report_dismiss_template(self):
+        self.assertTemplateUsed(self.resp_get, 'moderation/report_confirm_delete.html')
+
+    def test_report_dimiss_context(self):
+        self.assertEqual(self.resp_get.context['object'], self.post)
+
+    def test_report_dismiss_contains(self):
+        self.assertContains(self.resp_get, self.post.post_number)
+
+    def test_report_dismiss_redirect(self):
+        self.assertRedirects(self.resp_post, expected_url=reverse('dj-mod:moderation_userpost_report_list'), status_code=302)
+
+    def test_report_dismissed(self):
+        self.post.refresh_from_db()
+        self.assertFalse(self.post.reported) 
+

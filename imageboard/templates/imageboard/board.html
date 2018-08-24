@@ -15,6 +15,9 @@
       {% if moderation_view == False %}
         <a href="{{ thread.get_report_url }}">
           Report</a>
+      {% elif moderation_view == True %}
+        <a href="{{ thread.get_report_dismiss_url }}">
+          Dismiss</a>
       {% endif %}
       {% if perms.organizer.add_transgression %}
         <a href="{{ thread.get_ban_url }}">

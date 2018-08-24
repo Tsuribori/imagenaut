@@ -6,6 +6,8 @@
       <span>{{ post.name }}</span>
       <span>{{ post.get_date }}</span>
       <span>No. {{ post.post_number }}</span>
+      <a href="{{ post.get_report_dismiss_url }}">
+        Dismiss</a>
       {% if perms.organizer.add_transgression %}
         <a href="{{ post.get_ban_url }}">
           Ban</a>

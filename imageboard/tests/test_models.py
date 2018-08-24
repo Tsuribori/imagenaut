@@ -65,6 +65,10 @@ class ModelTestCase(TestCase):
         self.assertEqual(self.post1.get_report_url(), '/board/{}/{}/{}/report/'.format(
             self.board1.slug, self.thread1.thread_number, self.post1.post_number))
 
+    def test_report_dismiss_urls(self):
+        self.assertEqual(self.thread1.get_report_dismiss_url(), '/mod/reports/dismiss/thread/{}/'.format(self.thread1.thread_number))
+        self.assertEqual(self.post1.get_report_dismiss_url(), '/mod/reports/dismiss/post/{}/'.format(self.post1.post_number)) 
+
 class SageTestCase(TestCase):
 
     def setUp(self):

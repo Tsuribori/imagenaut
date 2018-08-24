@@ -1,11 +1,11 @@
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse_lazy, reverse
 from django.db.models import Prefetch
 from .models import Transgression
 from imageboard.models import Board, Thread, UserPost
 from imageboard.utils import GetIPMixin #IP needed for ban page
 from .forms import TransgressionForm
-from django.views.generic import CreateView, ListView
+from django.views.generic import View, CreateView, ListView
 # Create your views here.
 
 class ThreadBanCreate(CreateView):
@@ -93,10 +93,10 @@ class ReportedUserPostList(ListView):
 
     def get_queryset(self):
         if self.board:
-            posts = UserPost.objects.filter(thread__board=self.desired_board, reported=True)
+            posts = UserPost.objects.filter(thread__board=self.desired_board, reported=True).prefetch_related('thread__board')
             return posts
         else:
-            return UserPost.objects.filter(reported=True)
+            return UserPost.objects.filter(reported=True).prefetch_related('thread__board')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -104,3 +104,33 @@ class ReportedUserPostList(ListView):
         if self.board:
             context['moderation_board_url'] = '?board={}'.format(self.board)
         return context
+
+
+class ThreadReportDismiss(View):
+    template_name = 'moderation/report_confirm_delete.html'
+
+    def get(self, request, *args, **kwargs):
+        thread = get_object_or_404(Thread, thread_number=kwargs['thread_number'])
+        return render(request, self.template_name,  {'object': thread})
+
+    def post(self, request, *args, **kwargs):
+        thread = get_object_or_404(Thread, thread_number=kwargs['thread_number'])
+        thread.reported = False
+        thread.save()
+        return redirect(reverse('dj-mod:moderation_thread_report_list'))
+
+
+class UserPostReportDismiss(View):
+    template_name = 'moderation/report_confirm_delete.html'
+
+    def get(self, request, *args, **kwargs):
+        post = get_object_or_404(UserPost, post_number=kwargs['post_number'])
+        return render(request, self.template_name, {'object': post})
+
+    def post(self, request, *args, **kwargs):
+        post = get_object_or_404(UserPost, post_number=kwargs['post_number'])
+        post.reported = False
+        post.save()
+        return redirect(reverse('dj-mod:moderation_userpost_report_list'))
+
+

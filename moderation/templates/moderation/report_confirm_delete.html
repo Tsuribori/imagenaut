@@ -1,0 +1,21 @@
+{% extends parent_template|default:"moderation/base_moderation.html" %}
+
+{% block mod_content %}
+  <div>
+    <form 
+      action="{{ object.get_report_dismiss_url }}"
+      method="post">
+    {% csrf_token %}
+      <p>Are you sure you want to dismiss
+        reports on No. {{ object.post_number }} {{ object.thread_number }}?
+      </p>
+      
+      <a href="{{ object.get_absolute_url }}">
+        Cancel</a>
+
+      <button type="submit">Dismiss Report</button>
+      
+    </form>
+  </div>
+{% endblock %}
+
