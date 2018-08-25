@@ -4,6 +4,7 @@ from faker import Factory
 
 from imageboard.models import Board, Thread, UserPost
 from moderation.models import Transgression
+from rules.models import Rule
 
 faker = Factory.create()
 
@@ -42,3 +43,10 @@ class TransgressionFactory(factory.DjangoModelFactory):
     banned_until = faker.future_date(tzinfo=pytz.utc)
     reason = faker.text(max_nb_chars=150) #Need to set max character limit, as default for faker is max_nb_chars=200, which is over the model defined limit
     banned_from = factory.SubFactory(BoardFactory)
+
+class RuleFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = Rule
+
+    text = faker.text()
+    board = factory.SubFactory(BoardFactory)

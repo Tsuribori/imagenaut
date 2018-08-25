@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'imageboard',
     'moderation',
     'seed',
+    'rules',
 ]
 
 MIDDLEWARE = [

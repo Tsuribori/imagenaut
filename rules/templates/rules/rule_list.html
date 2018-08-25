@@ -1,0 +1,23 @@
+{% extends parent_template|default:"rules/base_rules.html" %}
+
+{% block rules_content %}
+  <div>
+    <p>Global Rules:</p>
+    <ul>
+    {% for global_rule in global_rules %}
+      <li>{{ global_rule.text }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+  {% for board in board_list %}
+    {% if board.rules.count > 0 %}
+      <div>
+        <p>{{ board.name }}:</p>
+        <ul>
+        {% for rule in board.rules.all %}
+          <li>{{ rule.text }}</li> 
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endblock %} 
