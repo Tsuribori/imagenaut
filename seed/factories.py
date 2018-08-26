@@ -1,7 +1,7 @@
 import factory
 import pytz
 from faker import Factory
-
+from django.contrib.auth.models import User, Permission
 from imageboard.models import Board, Thread, UserPost
 from moderation.models import Transgression
 from rules.models import Rule
@@ -50,3 +50,22 @@ class RuleFactory(factory.DjangoModelFactory):
 
     text = faker.text()
     board = factory.SubFactory(BoardFactory)
+
+class UserFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = User
+        django_get_or_create = ('username',)
+
+    username = factory.LazyAttribute(lambda _: faker.word())
+ 
+class ModeratorFactory():
+    def create_mod():
+        user = UserFactory()
+        perm1 = Permission.objects.get(name='Can delete thread')
+        perm2 = Permission.objects.get(name='Can delete user post')
+        perm3 = Permission.objects.get(name='Can add transgression')
+        permission_list = [perm1, perm2, perm3]
+        for permission in permission_list:
+            user.user_permissions.add(permission)
+        user.refresh_from_db()
+        return user
