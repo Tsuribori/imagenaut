@@ -6,11 +6,15 @@ from imageboard.models import Board, Thread, UserPost
 from imageboard.utils import GetIPMixin #IP needed for ban page
 from .forms import TransgressionForm
 from django.views.generic import View, CreateView, ListView
+from django.contrib.auth.mixins import PermissionRequiredMixin
 # Create your views here.
 
-class ThreadBanCreate(CreateView):
+
+class ThreadBanCreate(PermissionRequiredMixin, CreateView):
     form_class = TransgressionForm
     template_name = 'moderation/transgression_form.html'
+    permission_required = 'moderation.add_transgression'
+    raise_exception = True
     
     def dispatch(self, request, *args, **kwargs):
         self.thread = get_object_or_404(Thread, thread_number=self.kwargs['thread_number'])
@@ -25,9 +29,11 @@ class ThreadBanCreate(CreateView):
             form.instance.banned_from = self.thread.board
         return super(ThreadBanCreate, self).form_valid(form)
 
-class UserPostBanCreate(CreateView):
+class UserPostBanCreate(PermissionRequiredMixin, CreateView):
     form_class = TransgressionForm
     template_name = 'moderation/transgression_form.html'
+    permission_required = 'moderation.add_transgression'
+    raise_exception = True
     
     def dispatch(self, request, *args, **kwargs):
         self.userpost = get_object_or_404(UserPost, post_number=self.kwargs['post_number'])
@@ -51,11 +57,13 @@ class TransgressionList(ListView, GetIPMixin): #Ban page that shows user bans
         ip_address = self.get_remote_address()
         return Transgression.objects.filter(ip_address__iexact=ip_address)
 
-class ReportedThreadList(ListView):
+class ReportedThreadList(PermissionRequiredMixin, ListView):
     model = Thread
     context_object_name = 'thread_list'
     template_name = 'imageboard/board.html'
     paginate_by = 150
+    permission_required = 'imageboard.delete_thread'
+    raise_exception = True
 
     def dispatch(self, request, *args, **kwargs):
         self.board = request.GET.get('board', None)
@@ -79,12 +87,14 @@ class ReportedThreadList(ListView):
         return context
     
 
-class ReportedUserPostList(ListView):
+class ReportedUserPostList(PermissionRequiredMixin, ListView):
     model = UserPost
     context_object_name = 'post_list'
     template_name = 'moderation/reported_userpost_list.html'
     paginate_by = 150
-    
+    permission_required = 'imageboard.delete_userpost'
+    raise_exception = True
+
     def dispatch(self, request, *args, **kwargs):
         self.board = request.GET.get('board', None)
         if self.board:
@@ -106,8 +116,10 @@ class ReportedUserPostList(ListView):
         return context
 
 
-class ThreadReportDismiss(View):
+class ThreadReportDismiss(PermissionRequiredMixin, View):
     template_name = 'moderation/report_confirm_delete.html'
+    permission_required = 'imageboard.delete_thread'
+    raise_exception = True
 
     def get(self, request, *args, **kwargs):
         thread = get_object_or_404(Thread, thread_number=kwargs['thread_number'])
@@ -120,8 +132,10 @@ class ThreadReportDismiss(View):
         return redirect(reverse('dj-mod:moderation_thread_report_list'))
 
 
-class UserPostReportDismiss(View):
+class UserPostReportDismiss(PermissionRequiredMixin, View):
     template_name = 'moderation/report_confirm_delete.html'
+    permission_required = 'imageboard.delete_userpost'
+    raise_exception = True
 
     def get(self, request, *args, **kwargs):
         post = get_object_or_404(UserPost, post_number=kwargs['post_number'])

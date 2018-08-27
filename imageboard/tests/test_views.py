@@ -7,7 +7,7 @@ from datetime import timedelta
 from time import sleep
 from imageboard.models import Board, Thread, UserPost
 from imageboard.forms import ThreadForm, UserPostForm
-from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory
+from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory, ModeratorFactory
 
 
 
@@ -23,6 +23,8 @@ class SetUpMixin(TestCase):
         number_of_threads = 21
         for number in range(number_of_threads): #Create 21 thread to test pagination
             Thread.objects.create(post=str(number), board=self.board1, ip_address=self.ip_addr)
+        mod = ModeratorFactory.create_mod()
+        self.client.force_login(mod) #Login a mod to test delete views which require permissions
 
 class ViewTestCase(SetUpMixin):
    
@@ -238,3 +240,17 @@ class UserPostReportTestCase(TestCase):
     def test_thread_reported(self):
         self.assertTrue(self.post.reported)
 
+
+class ImageboardPermissions(TestCase): #Test that users with no permissions can't access delete views
+
+    def setUp(self):
+        self.thread = ThreadFactory()
+        self.post = UserPostFactory()
+
+    def test_no_thread_delete_permission(self):
+        resp = self.client.get(self.thread.get_delete_url())
+        self.assertEqual(resp.status_code, 403)
+
+    def test_no_userpost_delete_permission(self):
+        resp = self.client.get(self.post.get_delete_url())
+        self.assertEqual(resp.status_code, 403)

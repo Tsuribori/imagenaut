@@ -4,6 +4,7 @@ from .models import Board, Thread, UserPost
 from .forms import ThreadForm, UserPostForm
 from .utils import GetIPMixin, BanMixin, CooldownMixin
 from django.views.generic import View, ListView, CreateView, DeleteView
+from django.contrib.auth.mixins import PermissionRequiredMixin
 # Create your views here.
 
 class ThreadList(ListView):
@@ -92,9 +93,11 @@ class UserPostCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):
         form.instance.thread = self.thread
         return super(UserPostCreate, self).form_valid(form)
 
-class ThreadDelete(DeleteView):
+class ThreadDelete(PermissionRequiredMixin, DeleteView):
     model = Thread
     template_name = 'imageboard/thread_confirm_delete.html'
+    permission_required = 'imageboard.delete_thread'
+    raise_exception = True
    
     def dispatch(self, request, *args, **kwargs): 
         self.thread = get_object_or_404(Thread, thread_number=kwargs['thread_number'])
@@ -106,9 +109,11 @@ class ThreadDelete(DeleteView):
     def get_success_url(self):
         return self.thread.board.get_absolute_url()
 
-class UserPostDelete(DeleteView):
+class UserPostDelete(PermissionRequiredMixin, DeleteView):
     model = UserPost
     template_name = 'imageboard/userpost_confirm_delete.html'
+    permission_required = 'imageboard.delete_userpost'
+    raise_exception = True
  
     def dispatch(self, request, *args, **kwargs): 
         self.userpost = get_object_or_404(UserPost, post_number=kwargs['post_number'])

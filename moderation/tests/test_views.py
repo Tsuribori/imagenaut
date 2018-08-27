@@ -8,7 +8,7 @@ from time import sleep
 from django.conf import settings
 from imageboard.models import Board, Thread, UserPost
 from moderation.models import Transgression
-from seed.factories import BoardFactory, ThreadFactory, UserPostFactory, TransgressionFactory
+from seed.factories import BoardFactory, ThreadFactory, UserPostFactory, TransgressionFactory, ModeratorFactory
 
 class BanViewTestCase(TestCase):
     
@@ -22,6 +22,8 @@ class BanViewTestCase(TestCase):
         settings.THREAD_COOLDOWN = 0
         self.old_POST_COOLDOWN = settings.POST_COOLDOWN
         settings.POST_COOLDOWN = 0
+        mod = ModeratorFactory.create_mod()
+        self.client.force_login(mod)
 
     def tearDown(self):
         settings.THREAD_COOLDOWN = self.old_THREAD_COOLDOWN
@@ -171,14 +173,15 @@ class LoginViewTestCase(TestCase):
 class ThreadReportTestCase(TestCase):
  
     def setUp(self):
+       mod = ModeratorFactory.create_mod()
+       self.client.force_login(mod)
        self.board = BoardFactory()
        self.board2 = BoardFactory()
        self.threads = ThreadFactory.create_batch(5, reported=True, board=self.board)
        self.threads2 = ThreadFactory.create_batch(5, reported=True, board=self.board2)
        self.resp_get_all = self.client.get(reverse('dj-mod:moderation_thread_report_list'))
        self.resp_get_board = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_thread_report_list'), self.board.slug))
-           
-
+       
     def test_view_works(self):
        self.assertEqual(self.resp_get_all.status_code, 200)
        self.assertEqual(self.resp_get_board.status_code, 200)
@@ -208,12 +211,14 @@ class ThreadReportTestCase(TestCase):
 class ThreadReportPagination(TestCase):
 
     def setUp(self):
+        mod = ModeratorFactory.create_mod()
+        self.client.force_login(mod)
         self.board = BoardFactory()
         self.last_thread = ThreadFactory(reported=True, board=self.board)
         self.threads = ThreadFactory.create_batch(150, reported=True, board=self.board)
         self.resp = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_thread_report_list'), self.board.slug))
         self.resp2 = self.client.get('{}?board={}&page=2'.format(reverse('dj-mod:moderation_thread_report_list'), self.board.slug))
-
+        
     def test_link_in_page(self):
         self.assertContains(self.resp, "<a href='?board={}&page=2'>[2]</a>".format(self.board.slug), html=True)
 
@@ -228,6 +233,8 @@ class ThreadReportPagination(TestCase):
 class UserPostReportTestCase(TestCase):
  
     def setUp(self):
+       mod = ModeratorFactory.create_mod()
+       self.client.force_login(mod)
        self.board = BoardFactory()
        self.board2 = BoardFactory()
        self.thread = ThreadFactory(board=self.board)
@@ -235,8 +242,7 @@ class UserPostReportTestCase(TestCase):
        self.posts = UserPostFactory.create_batch(5, thread=self.thread, reported=True)
        self.posts2 = UserPostFactory.create_batch(5, thread=self.thread2, reported=True)
        self.resp_get_all = self.client.get(reverse('dj-mod:moderation_userpost_report_list'))
-       self.resp_get_board = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_userpost_report_list'), self.board.slug))
-           
+       self.resp_get_board = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_userpost_report_list'), self.board.slug))           
 
     def test_view_works(self):
        self.assertEqual(self.resp_get_all.status_code, 200)
@@ -265,12 +271,15 @@ class UserPostReportTestCase(TestCase):
 class UserPostReportPagination(TestCase):
 
     def setUp(self):
+        mod = ModeratorFactory.create_mod()
+        self.client.force_login(mod)
         self.board = BoardFactory()
         self.thread = ThreadFactory(board=self.board)
         self.posts = UserPostFactory.create_batch(150, reported=True, thread=self.thread)
         self.last_post = UserPostFactory(reported=True, thread=self.thread)
         self.resp = self.client.get('{}?board={}'.format(reverse('dj-mod:moderation_userpost_report_list'), self.board.slug))
         self.resp2 = self.client.get('{}?board={}&page=2'.format(reverse('dj-mod:moderation_userpost_report_list'), self.board.slug))
+        
 
     def test_link_in_page(self):
         self.assertContains(self.resp, "<a href='?board={}&page=2'>[2]</a>".format(self.board.slug), html=True)
@@ -286,9 +295,12 @@ class UserPostReportPagination(TestCase):
 class ThreadReportDismissView(TestCase):
 
     def setUp(self):
+        mod = ModeratorFactory.create_mod()
+        self.client.force_login(mod)
         self.thread = ThreadFactory(reported=True)
         self.resp_get = self.client.get(self.thread.get_report_dismiss_url())
         self.resp_post = self.client.post(self.thread.get_report_dismiss_url())
+        
 
     def test_report_dismiss_view_works(self):
         self.assertEqual(self.resp_get.status_code, 200)
@@ -312,9 +324,12 @@ class ThreadReportDismissView(TestCase):
 class UserPostReportDismissView(TestCase):
 
     def setUp(self):
+        mod = ModeratorFactory.create_mod()
+        self.client.force_login(mod)
         self.post = UserPostFactory(reported=True)
         self.resp_get = self.client.get(self.post.get_report_dismiss_url())
         self.resp_post = self.client.post(self.post.get_report_dismiss_url())
+        
 
     def test_report_dismiss_view_works(self):
         self.assertEqual(self.resp_get.status_code, 200)
@@ -335,3 +350,35 @@ class UserPostReportDismissView(TestCase):
         self.post.refresh_from_db()
         self.assertFalse(self.post.reported) 
 
+
+class ModerationPermissions(TestCase): #Test that users without permissions can't access moderation pages
+
+   def setUp(self):
+       self.thread = ThreadFactory(reported=True)
+       self.post = UserPostFactory(reported=True)
+
+   def test_thread_ban(self):
+       resp = self.client.get(self.thread.get_ban_url())
+       self.assertEqual(resp.status_code, 403)
+
+   def test_userpost_ban(self):
+       resp = self.client.get(self.post.get_ban_url())
+       self.assertEqual(resp.status_code, 403)
+
+   def test_thread_reports(self):
+       resp = self.client.get(reverse('dj-mod:moderation_thread_report_list'))
+       self.assertEqual(resp.status_code, 403)
+
+   def test_userpost_reports(self):
+       resp = self.client.get(reverse('dj-mod:moderation_userpost_report_list'))
+       self.assertEqual(resp.status_code, 403)
+
+   def test_thread_report_dismiss(self):
+       resp = self.client.get(self.thread.get_report_dismiss_url())
+       self.assertEqual(resp.status_code, 403)
+
+   def test_userpost_report_dismiss(self):
+       resp = self.client.get(self.post.get_report_dismiss_url())
+       self.assertEqual(resp.status_code, 403)
+
+   
