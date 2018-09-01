@@ -254,3 +254,43 @@ class ImageboardPermissions(TestCase): #Test that users with no permissions can'
     def test_no_userpost_delete_permission(self):
         resp = self.client.get(self.post.get_delete_url())
         self.assertEqual(resp.status_code, 403)
+
+
+class ThreadCatalogTestCase(TestCase):
+
+    def setUp(self):
+        self.board = BoardFactory()
+        self.threads = ThreadFactory.create_batch(5, board=self.board)
+        self.thread1 = ThreadFactory(subject='test', board=self.board)
+        self.thread2 = ThreadFactory(post='test', board=self.board)
+        self.resp_all_threads = self.client.get(self.board.get_catalog_url())
+        self.resp_specific = self.client.get('{}?search={}'.format(self.board.get_catalog_url(), 'test'))
+        self.resp_post_search = self.client.post(self.board.get_catalog_url(), {'search_term' : 'Test'})
+
+
+    def test_view_works(self):
+        self.assertEqual(self.resp_all_threads.status_code, 200)
+        
+
+    def test_template(self):
+        self.assertTemplateUsed(self.resp_all_threads, 'imageboard/catalog.html')
+
+    def test_context(self):
+        self.assertEqual(self.resp_all_threads.context['board'], self.board)
+
+    def test_threads_displayed(self):
+        for thread in self.threads:
+            self.assertContains(self.resp_all_threads, thread.post)
+        
+
+    def test_subject_search(self):
+        self.assertContains(self.resp_specific, self.thread1.subject)
+                
+    def test_post_search(self):
+        self.assertContains(self.resp_specific, self.thread2.post)
+
+
+    def test_post_redirect(self):
+        self.assertRedirects(self.resp_post_search, expected_url='{}?search={}'.format(self.board.get_catalog_url(), 'Test'), status_code=302)
+  
+

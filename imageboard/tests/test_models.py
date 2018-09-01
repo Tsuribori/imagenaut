@@ -67,7 +67,11 @@ class ModelTestCase(TestCase):
 
     def test_report_dismiss_urls(self):
         self.assertEqual(self.thread1.get_report_dismiss_url(), '/mod/reports/dismiss/thread/{}/'.format(self.thread1.thread_number))
-        self.assertEqual(self.post1.get_report_dismiss_url(), '/mod/reports/dismiss/post/{}/'.format(self.post1.post_number)) 
+        self.assertEqual(self.post1.get_report_dismiss_url(), '/mod/reports/dismiss/post/{}/'.format(self.post1.post_number))
+
+    def test_catalog_url(self):
+        self.assertEqual(self.board1.get_catalog_url(), '/board/{}/catalog/'.format(self.board1.slug))
+
 
 class SageTestCase(TestCase):
 

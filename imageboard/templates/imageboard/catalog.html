@@ -1,0 +1,31 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+
+{% block img_content %}
+  <div>
+    <h3>{{ board.name }}<h3>
+  </div>
+  <span>
+    <form
+      action="{{ board.get_catalog_url }}"
+      method="post">
+      {% csrf_token %}
+      <input type="text" name="search_term">
+      <button type="submit">
+        Search</button>
+    </form>
+  </span> 
+
+  {% for thread in thread_list %}
+    <div id={{ thread.thread_number }}>
+      <span>R: {{ thread.posts.all.count }}</span>
+      <a href="{{ thread.get_absolute_url }}">
+        View</a>
+      {% if thread.subject %}
+        <p>{{ thread.subject }}</p>
+      {% endif %}
+      <p>{{ thread.post }}</p>
+    </div>
+  {% endfor %}
+
+{% endblock %}
+      

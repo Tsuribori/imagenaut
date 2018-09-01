@@ -44,5 +44,3 @@ class UserPostForm(forms.ModelForm, GetIPMixin, CooldownMixin):
         if self.user_on_cooldown(UserPost):
             raise ValidationError('You must wait longer before making a new post.')
         return name
-
-

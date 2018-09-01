@@ -18,6 +18,9 @@ class Board(models.Model):
         return reverse('imageboard_thread_list', kwargs={'board': self.slug})
     def get_thread_create_url(self):
         return reverse('imageboard_thread_create', kwargs={'board': self.slug})
+    def get_catalog_url(self):
+        return reverse('imageboard_thread_catalog', kwargs={'board': self.slug})
+
     def __str__(self):
         return self.name
 

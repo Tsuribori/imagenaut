@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from .models import Board, Thread, UserPost
 from .forms import ThreadForm, UserPostForm
 from .utils import GetIPMixin, BanMixin, CooldownMixin
@@ -152,3 +152,27 @@ class UserPostReport(View):
         return redirect(post)
 
 
+class ThreadCatalog(ListView):
+    model = Thread
+    context_object_name = 'thread_list'
+    template_name = 'imageboard/catalog.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.desired_board = get_object_or_404(Board.objects.prefetch_related(
+            Prefetch('threads', queryset=Thread.objects.filter(archived=False))), slug=self.kwargs['board'])
+        self.search_term = request.GET.get('search', None)
+        return super(ThreadCatalog, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+         return redirect('{}?search={}'.format(self.desired_board.get_catalog_url(), request.POST.get('search_term', ''))) #Very messy solution
+ 
+    def get_queryset(self):
+        if self.search_term:
+            return self.desired_board.threads.filter(Q(subject__icontains=self.search_term) | Q(post__icontains=self.search_term)).prefetch_related('posts')
+        else:
+            return self.desired_board.threads.prefetch_related('posts')
+
+    def get_context_data(self, **kwargs):
+       context = super().get_context_data(**kwargs)
+       context['board'] = self.desired_board
+       return context        
