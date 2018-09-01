@@ -2,4 +2,6 @@
 *.pyc
 .coverage
 geckodriver.log
+/static/*
+/media/*
 

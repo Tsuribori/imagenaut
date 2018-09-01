@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from datetime import datetime
 from django.utils import timezone
+from sorl.thumbnail import ImageField
 #from django.utils.functional import cached_property
 
 # Create your models here.
@@ -43,6 +44,7 @@ class Thread(models.Model, DateMixin):
     archived = models.BooleanField(default=False)
     bumb_limit_reached = models.BooleanField(default=False) 
     reported = models.BooleanField(default=False)
+    image = ImageField(upload_to='images/', blank=False)
 
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
@@ -90,6 +92,7 @@ class UserPost(models.Model, DateMixin):
     ip_address = models.GenericIPAddressField()
     sage = models.BooleanField(default=False)
     reported = models.BooleanField(default=False)
+    image = ImageField(upload_to='images/', blank=True, null=True)
 
     def __str__(self):
         return str(self.post_number)

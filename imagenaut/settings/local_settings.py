@@ -1,6 +1,7 @@
 from .base_settings import *
 
 DEBUG = True
+THUMBNAIL_DEBUG = True
 
 INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar',]
     
@@ -11,3 +12,5 @@ MIDDLEWARE = [
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+

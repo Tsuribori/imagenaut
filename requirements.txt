@@ -3,3 +3,5 @@ factory_boy==2.11.1
 pytz==2018.5
 django-debug-toolbar==1.9.1
 sorl-thumbnail==12.4.1
+python-memcached==1.59
+Pillow==5.2.0

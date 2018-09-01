@@ -1,4 +1,5 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
+{% load thumbnail %}
 
 {% block img_content %}
   <div id={{ thread.thread_number }}>
@@ -18,6 +19,13 @@
       <a href="{{ thread.get_delete_url }}">
         Delete</a>
     {% endif %}
+    <p>
+      {% thumbnail thread.image "200x200" as img %}
+        <a href="{{ thread.image.url }}">
+          <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
+        </a>
+      {% endthumbnail %}
+    </p>
     <p>{{ thread.post }}</p>
   </div>
   {% for post in thread.cached_posts %}
@@ -34,6 +42,15 @@
       {% if perms.organizer.delete_userpost %}
         <a href="{{ post.get_delete_url }}">
           Delete</a>
+      {% endif %}
+      {% if post.image %}
+        <p>
+          {% thumbnail post.image "200x200" as img %}
+            <a href="{{ post.image.url }}">
+              <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
+            </a>
+          {% endthumbnail %}
+        </p>
       {% endif %}
       <p>{{ post.post }}</p>
     </div>

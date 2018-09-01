@@ -1,4 +1,5 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
+{% load thumbnail %}
 
 {% block img_content %}
   {% for post in post_list %}
@@ -16,6 +17,15 @@
         <a href="{{ post.get_delete_url }}">
           Delete</a>
       {% endif %}
+      {% if post.image %}
+        <p>
+          {% thumbnail post.image "200x200" as img %}
+            <a href="{{ post.image.url }}">
+              <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
+            </a>
+          {% endthumbnail %}
+      {% endif %}
+        </p>
       <p>{{ post.post }}</p>
     </div>
   {% empty %}

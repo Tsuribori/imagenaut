@@ -126,9 +126,21 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
+#Media settings
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+#Cache
+
+CACHES = {
+    'default' : {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
 
 #Login URLs
 
@@ -142,3 +154,4 @@ LOGOUT_URL = reverse_lazy('dj-mod:logout')
 
 THREAD_COOLDOWN = 600 #Seconds user has to wait until making a new thread
 POST_COOLDOWN = 50 # Seconds user has to wait until making a new post
+

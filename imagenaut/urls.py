@@ -17,6 +17,7 @@ from debug_toolbar import urls as debug_urls
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
+from django.conf.urls.static import static
 from django.conf import settings
 from imageboard import urls as imageboard_urls
 from moderation import urls as moderation_urls
@@ -32,5 +33,5 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns = [
         path('debug/', include(debug_urls)),
-    ] + urlpatterns
+    ] + urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
