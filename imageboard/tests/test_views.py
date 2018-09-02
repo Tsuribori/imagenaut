@@ -5,9 +5,10 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from datetime import timedelta
 from time import sleep
+import factory
 from imageboard.models import Board, Thread, UserPost
 from imageboard.forms import ThreadForm, UserPostForm
-from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory, ModeratorFactory
+from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory, ModeratorFactory, ImageFactory
 
 
 
@@ -91,7 +92,8 @@ class CreateViewTestCase(TestCase):
     def test_thread_form_post(self): #Test that threads can be made
        sleep(0.15) #Sleep so cooldown is reset and posting works
        post_made = 'This is a form test'
-       resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), {'post': post_made, 'name': 'Iodine'})
+       resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), 
+           {'post': post_made, 'name': 'Iodine', 'image': ImageFactory()})
        self.assertEqual(resp.status_code, 302)
        new_thread = Thread.objects.get(post=post_made)
        self.assertEqual(new_thread.name, 'Iodine')
@@ -294,3 +296,17 @@ class ThreadCatalogTestCase(TestCase):
         self.assertRedirects(self.resp_post_search, expected_url='{}?search={}'.format(self.board.get_catalog_url(), 'Test'), status_code=302)
   
 
+class ImageTestCase(TestCase): #Test that images are shown 
+
+    def setUp(self):
+        self.thread = ThreadFactory()
+        self.post = UserPostFactory()
+
+    
+    def test_thread_image_shown(self):
+        self.resp = self.client.get(self.thread.board.get_absolute_url())
+        self.assertContains(self.resp, self.thread.image.url)
+ 
+    def test_post_image_shown(self):
+        self.resp = self.client.get(self.post.get_absolute_url())
+        self.assertContains(self.resp, self.post.image.url)

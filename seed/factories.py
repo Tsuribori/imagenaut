@@ -1,7 +1,11 @@
 import factory
 import pytz
+import os
+import sys
 from faker import Factory
 from django.contrib.auth.models import User, Permission
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
 from imageboard.models import Board, Thread, UserPost
 from moderation.models import Transgression
 from rules.models import Rule
@@ -18,12 +22,14 @@ class BoardFactory(factory.DjangoModelFactory):
 class ThreadFactory(factory.DjangoModelFactory):
     class Meta:
         model = Thread
+        exclude = ('files',)
 
     subject = faker.word()
     name = faker.name()
     post = factory.LazyAttribute(lambda _: faker.text())
     board = factory.SubFactory(BoardFactory)
     ip_address = faker.ipv4()
+    image = factory.django.ImageField()
     
 
 class UserPostFactory(factory.DjangoModelFactory):
@@ -34,6 +40,7 @@ class UserPostFactory(factory.DjangoModelFactory):
     post = factory.LazyAttribute(lambda _: faker.text())
     thread = factory.SubFactory(ThreadFactory)
     ip_address = faker.ipv4()
+    image = factory.django.ImageField()
 
 class TransgressionFactory(factory.DjangoModelFactory):
     class Meta:
@@ -69,3 +76,8 @@ class ModeratorFactory():
             user.user_permissions.add(permission)
         user.refresh_from_db()
         return user
+
+class ImageFactory():
+    def __new__(cls):
+        img = open(os.path.join(settings.BASE_DIR, 'seed/example_picture.jpg'), 'rb')
+        return SimpleUploadedFile(img.name, img.read())

@@ -5,10 +5,11 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from datetime import timedelta
 from time import sleep
+from io import StringIO
 from django.conf import settings
 from imageboard.models import Board, Thread, UserPost
 from moderation.models import Transgression
-from seed.factories import BoardFactory, ThreadFactory, UserPostFactory, TransgressionFactory, ModeratorFactory
+from seed.factories import BoardFactory, ThreadFactory, UserPostFactory, TransgressionFactory, ModeratorFactory, ImageFactory
 
 class BanViewTestCase(TestCase):
     
@@ -89,7 +90,7 @@ class BanViewTestCase(TestCase):
     def test_ban_page_redirect_board_specific(self): #Test that banned user redirects to the banned page correctly when user has board specific ban
         ban = TransgressionFactory(banned_from=self.board, ip_address=self.ip_addr)
         resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board.slug}), 
-            {'post': 'Im trying to break the rules!', 'name': 'Anon'})
+            {'post': 'Im trying to break the rules!', 'name': 'Anon', 'image': ImageFactory()})
         self.assertRedirects(resp, expected_url=reverse('dj-mod:moderation_ban_page'))
         resp2 = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board.slug, 'thread_number': self.thread.thread_number}), 
             {'post': 'Im trying to break the rules!', 'name': 'Anon'})
@@ -99,7 +100,7 @@ class BanViewTestCase(TestCase):
         board2 = BoardFactory()
         ban = TransgressionFactory(banned_from=board2, ip_address=self.ip_addr)
         resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board.slug}), 
-            {'post': 'Im not trying to break the rules!', 'name': 'Anon'})
+            {'post': 'Im not trying to break the rules!', 'name': 'Anon', 'image': ImageFactory()})
         self.assertRedirects(resp, expected_url=reverse('imageboard_thread_page', kwargs={'board': self.board.slug, 'thread_number': 1}))
         resp2 = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board.slug, 'thread_number': self.thread.thread_number}), 
             {'post': 'Im not trying to break the rules!', 'name': 'Anon'})
@@ -120,13 +121,13 @@ class BanProperRedirectTestCase(TestCase): #Test that there is no redirect when 
     def setUp(self):
         self.ban1 = self.ip_addr = '127.0.0.1' 
         self.board1 = Board.objects.create(name='Test board', slug='test')
-        self.thread1 = Thread.objects.create(post='Test thread!', board=self.board1, ip_address=self.ip_addr)
+        self.thread1 = ThreadFactory() 
         self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1, ip_address=self.ip_addr)
         self.ban1 = Transgression.objects.create(banned_until=timezone.now()+timedelta(seconds=0.1), reason='Not liking the mods!', ip_address=self.ip_addr)
         self.old_THREAD_COOLDOWN = settings.THREAD_COOLDOWN
         settings.THREAD_COOLDOWN = 0.05
         self.old_POST_COOLDOWN = settings.POST_COOLDOWN
-        settings.POST_COOLDOWN = 0.05
+        settings.POST_COOLDOWN = 0.05 
 
     def tearDown(self):
         settings.THREAD_COOLDOWN = self.old_THREAD_COOLDOWN
@@ -135,7 +136,7 @@ class BanProperRedirectTestCase(TestCase): #Test that there is no redirect when 
     def test_no_thread_redirect(self):
         sleep(0.1)
         resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), 
-            {'post': 'Im not breaking the rules!', 'name': 'Anon'})
+            {'post': 'Im not breaking the rules!', 'name': 'Anon', 'image': ImageFactory()})
         self.assertRedirects(resp, expected_url=reverse('imageboard_thread_page', kwargs={'board': self.board1.slug, 'thread_number': 1}), status_code=302)
 
     def test_no_post_redirect(self):
