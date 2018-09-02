@@ -142,6 +142,9 @@ CACHES = {
     }
 }
 
+#Thumbnail settings
+THUMBNAIL_PRESERVE_FORMAT = True #Must be used or transparent images won't work
+
 #Login URLs
 
 from django.urls import reverse_lazy
@@ -154,4 +157,5 @@ LOGOUT_URL = reverse_lazy('dj-mod:logout')
 
 THREAD_COOLDOWN = 600 #Seconds user has to wait until making a new thread
 POST_COOLDOWN = 50 # Seconds user has to wait until making a new post
+
 

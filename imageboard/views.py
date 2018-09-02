@@ -151,6 +151,9 @@ class UserPostReport(View):
         post.save()
         return redirect(post)
 
+#class ThreadImageDelete(View):
+#    template_name = 'imageboard/thread_image_delete.html'
+  
 
 class ThreadCatalog(ListView):
     model = Thread

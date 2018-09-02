@@ -294,6 +294,11 @@ class ThreadCatalogTestCase(TestCase):
 
     def test_post_redirect(self):
         self.assertRedirects(self.resp_post_search, expected_url='{}?search={}'.format(self.board.get_catalog_url(), 'Test'), status_code=302)
+
+    def test_nothing_found(self):
+        resp = self.client.get('{}?search={}'.format(self.board.get_catalog_url(), 'ÄÖÅ')) #Test with a word the factory can't produce
+        self.assertContains(resp, 'Nothing found.')
+
   
 
 class ImageTestCase(TestCase): #Test that images are shown 
@@ -304,9 +309,13 @@ class ImageTestCase(TestCase): #Test that images are shown
 
     
     def test_thread_image_shown(self):
-        self.resp = self.client.get(self.thread.board.get_absolute_url())
-        self.assertContains(self.resp, self.thread.image.url)
+        resp = self.client.get(self.thread.board.get_absolute_url())
+        self.assertContains(resp, self.thread.image.url)
  
     def test_post_image_shown(self):
-        self.resp = self.client.get(self.post.get_absolute_url())
-        self.assertContains(self.resp, self.post.image.url)
+        resp = self.client.get(self.post.get_absolute_url())
+        self.assertContains(resp, self.post.image.url)
+
+    def test_image_in_catalog(self):
+        resp = self.client.get(self.thread.board.get_catalog_url())
+        self.assertContains(resp, self.thread.image.url)

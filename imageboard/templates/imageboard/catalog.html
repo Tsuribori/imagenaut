@@ -1,4 +1,5 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
+{% load thumbnail %}
 
 {% block img_content %}
   <div>
@@ -17,6 +18,13 @@
 
   {% for thread in thread_list %}
     <div id={{ thread.thread_number }}>
+      <p>
+        {% thumbnail thread.image "200x200" as img %}
+          <a href="{{ thread.image.url }}">
+            <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
+          </a>
+        {% endthumbnail %}
+      </p>
       <span>R: {{ thread.posts.all.count }}</span>
       <a href="{{ thread.get_absolute_url }}">
         View</a>
@@ -25,6 +33,9 @@
       {% endif %}
       <p>{{ thread.post }}</p>
     </div>
+
+  {% empty %}
+    <h3>Nothing found.</h3>
   {% endfor %}
 
 {% endblock %}
