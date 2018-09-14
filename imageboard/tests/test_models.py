@@ -120,3 +120,24 @@ class ArchivalOnThreadLimit(TestCase): #Test that old threads are "bumbed off" w
     def test_bumping_off(self): 
         self.assertTrue(self.old_thread.archived)
 
+
+class Pinned(TestCase):
+
+    def setUp(self):
+        self.thread = ThreadFactory(pinned=True)
+        self.posts = UserPostFactory.create_batch(500, thread=self.thread)
+        self.thread.refresh_from_db()
+
+    def test_no_archiving_when_pinned(self): #Test that thread isn't archived when it is pinned
+        self.assertFalse(self.thread.archived)
+
+class PinnedOrdering(TestCase): #Test that pinned threads are always displayed first
+
+    def setUp(self):
+        self.board = BoardFactory()
+        self.pinned_thread = ThreadFactory(pinned=True, board=self.board)
+        self.regular_thread = ThreadFactory(board=self.board)
+
+    def test_ordering(self):
+        threads = Thread.objects.all()
+        self.assertEqual(threads[0], self.pinned_thread)

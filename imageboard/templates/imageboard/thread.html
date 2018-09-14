@@ -1,60 +1,14 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
-{% load thumbnail %}
-
+{% load imageboard_objects %}
+ 
 {% block img_content %}
-  <div id={{ thread.thread_number }}>
-    {% if thread.subject %}
-      <span>{{ thread.subject }}</span>
-    {% endif %}
-    <span>{{ thread.name }}</span>
-    <span>{{ thread.get_date }}</span>
-    <span>No. {{ thread.thread_number }}</span>
-    <a href="{{ thread.get_report_url }}">
-      Report</a>
-    {% if perms.organizer.add_transgression %}
-      <a href="{{ thread.get_ban_url }}">
-        Ban</a>
-    {% endif %}
-    {% if perms.organizer.delete_thread %}
-      <a href="{{ thread.get_delete_url }}">
-        Delete</a>
-    {% endif %}
-    <p>
-      {% thumbnail thread.image "200x200" as img %}
-        <a href="{{ thread.image.url }}">
-          <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
-        </a>
-      {% endthumbnail %}
-    </p>
-    <p>{{ thread.post }}</p>
-  </div>
+  
+  {% thread_format thread %}  
+
   {% for post in thread.cached_posts %}
-    <div id={{ post.post_number }}>
-      <span>{{ post.name }}</span>
-      <span>{{ post.get_date }}</span>
-      <span>No. {{ post.post_number }}</span>
-      <a href="{{ post.get_report_url }}">
-        Report</a>
-      {% if perms.organizer.add_transgression %}
-        <a href="{{ post.get_ban_url }}">
-          Ban</a>
-      {% endif %}
-      {% if perms.organizer.delete_userpost %}
-        <a href="{{ post.get_delete_url }}">
-          Delete</a>
-      {% endif %}
-      {% if post.image %}
-        <p>
-          {% thumbnail post.image "200x200" as img %}
-            <a href="{{ post.image.url }}">
-              <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
-            </a>
-          {% endthumbnail %}
-        </p>
-      {% endif %}
-      <p>{{ post.post }}</p>
-    </div>
+    {% post_format post %} 
   {% endfor %}
+
   <div>
     {% if thread.archived == False %}
       {% include "imageboard/userpost_form.html" %}

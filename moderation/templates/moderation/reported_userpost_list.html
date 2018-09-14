@@ -1,35 +1,11 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
-{% load thumbnail %}
+{% load imageboard_objects %}
 
 {% block img_content %}
   {% for post in post_list %}
-    <div id={{ post.post_number }}>
-      <span>{{ post.name }}</span>
-      <span>{{ post.get_date }}</span>
-      <span>No. {{ post.post_number }}</span>
-      <a href="{{ post.get_report_dismiss_url }}">
-        Dismiss</a>
-      {% if perms.organizer.add_transgression %}
-        <a href="{{ post.get_ban_url }}">
-          Ban</a>
-      {% endif %}
-      {% if perms.organizer.delete_userpost %}
-        <a href="{{ post.get_delete_url }}">
-          Delete</a>
-      {% endif %}
-      {% if post.image %}
-        <p>
-          {% thumbnail post.image "200x200" as img %}
-            <a href="{{ post.image.url }}">
-              <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
-            </a>
-          {% endthumbnail %}
-      {% endif %}
-        </p>
-      <p>{{ post.post }}</p>
-    </div>
+    {% post_format post %} 
   {% empty %}
-    <h3>No reported posts for board.</h3>
+    <h3>No reported posts.</h3>
   {% endfor %}
 
   {% if is_paginated and moderation_board_url %}

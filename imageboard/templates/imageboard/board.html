@@ -1,47 +1,19 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
-{% load thumbnail %}
+{% load imageboard_objects %}
 
 {% block img_content %}
   <div>
     <h3>{{ board.name }}</h3>
   </div>
   {% for thread in thread_list %}
-    <div id={{ thread.thread_number }}>
-      {% if thread.subject %}
-      <span>{{ thread.subject }}</span>
-      {% endif %}
-      <span>{{ thread.name }}</span>
-      <span>{{ thread.get_date }}</span>
-      <span>No. {{ thread.thread_number }}</span>
-      {% if moderation_view == False %}
-        <a href="{{ thread.get_report_url }}">
-          Report</a>
-      {% elif moderation_view == True %}
-        <a href="{{ thread.get_report_dismiss_url }}">
-          Dismiss</a>
-      {% endif %}
-      {% if perms.organizer.add_transgression %}
-        <a href="{{ thread.get_ban_url }}">
-          Ban</a>
-      {% endif %}
-      {% if perms.organizer.delete_thread %}
-        <a href="{{ thread.get_delete_url }}">
-          Delete</a>
-      {% endif %}
-      <p>
-        {% thumbnail thread.image "200x200" as img %}
-          <a href="{{ thread.image.url }}">
-            <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
-          </a>
-        {% endthumbnail %}
-      </p>
-      <p>{{ thread.post }}</p>
+    {% thread_format thread %} 
+    <div>
       {% with post_count=thread.posts.count %}
         <span>{{ post_count }} repl{{ post_count|pluralize:"y,ies" }}</span>
       {% endwith %}
       <a href="{{ thread.get_absolute_url }}">
         View Thread</a>
-          </div>
+    </div>
   {% endfor %}
  
   {% if moderation_view == False %}

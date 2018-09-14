@@ -38,6 +38,7 @@ class ThreadDetail(ListView):
     def get_context_data(self, **kwargs):
        context = super().get_context_data(**kwargs)
        context['form'] = UserPostForm
+       context['moderation_view'] = False
        return context   
 
 class ThreadCreate(CreateView, GetIPMixin, BanMixin, CooldownMixin):

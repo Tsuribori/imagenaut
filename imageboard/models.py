@@ -45,6 +45,7 @@ class Thread(models.Model, DateMixin):
     bumb_limit_reached = models.BooleanField(default=False) 
     reported = models.BooleanField(default=False)
     image = ImageField(upload_to='images/', blank=False)
+    pinned = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
@@ -72,7 +73,7 @@ class Thread(models.Model, DateMixin):
         super(Thread, self).save(*args, **kwargs)
 
     class Meta:
-        ordering = ['-bumb_order']
+        ordering = ['-pinned', '-bumb_order']
         indexes = [
             models.Index(fields=['thread_number']),
         ]
@@ -114,7 +115,7 @@ class UserPost(models.Model, DateMixin):
         if self.sage==False and self.thread.bumb_limit_reached==False:
             self.thread.bumb_order=timezone.now()
         post_count = self.thread.posts.count() 
-        if post_count >= 499:
+        if post_count >= 499 and self.thread.pinned == False:
             self.thread.archived = True
         elif post_count >= 349:
             self.thread.bumb_limit_reached = True

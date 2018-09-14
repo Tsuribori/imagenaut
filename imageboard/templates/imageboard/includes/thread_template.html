@@ -1,0 +1,37 @@
+{% load thumbnail %}
+
+<div id={{ thread.thread_number }}>
+  {% if thread.subject %}
+    <span>{{ thread.subject }}</span>
+  {% endif %}
+  <span>{{ thread.name }}</span>
+  <span>{{ thread.get_date }}</span>
+  <span>No. {{ thread.thread_number }}</span>
+  {% if thread.pinned %}
+    <span>[P]</span>
+  {% endif %}
+  {% if moderation_view == False %}
+    <a href="{{ thread.get_report_url }}">
+      Report</a>
+  {% elif moderation_view == True %}
+    <a href="{{ thread.get_report_dismiss_url }}">
+      Dismiss</a>
+  {% endif %}
+  {% if perms.organizer.add_transgression %}
+    <a href="{{ thread.get_ban_url }}">
+      Ban</a>
+  {% endif %}
+  {% if perms.organizer.delete_thread %}
+    <a href="{{ thread.get_delete_url }}">
+      Delete</a>
+  {% endif %}
+  <p>
+    {% thumbnail thread.image "200x200" as img %}
+      <a href="{{ thread.image.url }}">
+        <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
+      </a>
+    {% endthumbnail %}
+  </p>
+  <p>{{ thread.post }}</p>
+
+</div>

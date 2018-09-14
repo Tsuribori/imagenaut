@@ -111,6 +111,7 @@ class ReportedUserPostList(PermissionRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_url'] = '?page='
+        context['moderation_view'] = True
         if self.board:
             context['moderation_board_url'] = '?board={}'.format(self.board)
         return context
