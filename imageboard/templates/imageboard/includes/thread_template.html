@@ -13,15 +13,16 @@
   {% if moderation_view == False %}
     <a href="{{ thread.get_report_url }}">
       Report</a>
-  {% elif moderation_view == True %}
+  {% endif %}
+  {% if thread.reported == True and moderation_view == True %}
     <a href="{{ thread.get_report_dismiss_url }}">
       Dismiss</a>
   {% endif %}
-  {% if perms.organizer.add_transgression %}
+  {% if perms.moderation.add_transgression %}
     <a href="{{ thread.get_ban_url }}">
       Ban</a>
   {% endif %}
-  {% if perms.organizer.delete_thread %}
+  {% if perms.imageboard.delete_thread %}
     <a href="{{ thread.get_delete_url }}">
       Delete</a>
   {% endif %}
