@@ -1,6 +1,7 @@
 {% load thumbnail %}
 
-<div id={{ post.post_number }}>
+<div id={{ post.post_number }} class="card card-shadow">
+<div class="content">
   <span>{{ post.name }}</span>
   <span>{{ post.get_date }}</span>
   <span>No. {{ post.post_number }}</span>
@@ -20,15 +21,22 @@
     <a href="{{ post.get_delete_url }}">
       Delete</a>
   {% endif %}
-  {% if post.image %}
-    <p>
-      {% thumbnail post.image "200x200" as img %}
-        <a href="{{ post.image.url }}">
-          <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
-        </a>
-      {% endthumbnail %}
-    </p>
-  {% endif %}
-  <p>{{ post.post }}</p>
-</div>
+  <div>
+    <div class="grid-flex">
+      {% if post.image %}
+        <p class="content">
+          {% thumbnail post.image "200x200" as img %}
+            <a href="{{ post.image.url }}">
+              <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
+            </a>
+          {% endthumbnail %}
+        </p>
+      {% endif %}
+    </div>
+    <div>
+      <p>{{ post.post }}</p>
+    </div>
+  </div>
 
+</div>
+</div>

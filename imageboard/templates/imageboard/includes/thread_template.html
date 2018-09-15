@@ -1,6 +1,8 @@
 {% load thumbnail %}
 
-<div id={{ thread.thread_number }}>
+
+<div id={{ thread.thread_number }} class="card card-shadow">
+<div class="content">
   {% if thread.subject %}
     <span>{{ thread.subject }}</span>
   {% endif %}
@@ -26,13 +28,21 @@
     <a href="{{ thread.get_delete_url }}">
       Delete</a>
   {% endif %}
-  <p>
-    {% thumbnail thread.image "200x200" as img %}
-      <a href="{{ thread.image.url }}">
-        <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
-      </a>
-    {% endthumbnail %}
-  </p>
-  <p>{{ thread.post }}</p>
+  <div>
+    <div class="grid-flex">
+      <p class="content">
+        {% thumbnail thread.image "200x200" as img %}
+          <a href="{{ thread.image.url }}">
+            <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
+          </a>
+        {% endthumbnail %}
+      </p>
+    </div>
+    <div>
+      <p>{{ thread.post }}</p>
+    </div>
+  </div>
 
 </div>
+</div>
+

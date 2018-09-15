@@ -1,7 +1,8 @@
 {% extends parent_template|default:"moderation/base_moderation.html" %}
 
 {% block mod_content %}
-  <div>
+  <div class="card card-shadow">
+   <div class="content">
     <form 
       action="{{ object.get_report_dismiss_url }}"
       method="post">
@@ -16,6 +17,7 @@
       <button type="submit">Dismiss Report</button>
       
     </form>
+   </div>
   </div>
 {% endblock %}
 

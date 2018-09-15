@@ -1,15 +1,17 @@
 {% extends parent_template|default:"moderation/base_moderation.html" %}
 
 {% block mod_content %}
-<div>
+<div class="content">
   {% if transgression_list %}
     <h3>You have the following ban{{ transgression_list.all|pluralize }}:</h3>
       {% for transgression in transgression_list %}
+       <div class="card card-shadow">
+       <div class="content">
         <p>You were banned from 
           {% if transgression.global_ban %}
             all boards
           {% elif transgression.banned_from %}
-            /{{ transgression.banned_from.slug }}/ : {{ transgression.banned_from.name }}
+            /{{ transgression.banned_from.slug }}/  {{ transgression.banned_from.name }}
           {% endif %}
           for: 
           {{ transgression.reason }} <br>
@@ -17,10 +19,13 @@
           which is {{ transgression.banned_until|timeuntil }} from now.
           The IP address you were posting from was {{ transgression.ip_address }}.
         </p>
+       </div>
+       </div>
       {% endfor %}
 
   {% else %}
     <h3>You are not currently banned.</h3>
 
   {% endif %}
+</div>
 {% endblock %}

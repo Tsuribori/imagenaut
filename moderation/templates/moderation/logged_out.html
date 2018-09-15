@@ -1,9 +1,11 @@
 {% extends parent_template|default:"moderation/base_moderation.html" %}
 
 {% block mod_content %}
-  <div>
-    <p>You've succesfully logged out.</p>
-    {% include "moderation/login_form.html" with login_button='Log Back In' %}
+  <div class="card card-shadow">
+    <div class="content">
+      <p>You've succesfully logged out.</p>
+      {% include "moderation/login_form.html" with login_button='Log Back In' %}
+    </div>
   </div>
 {% endblock %}
 

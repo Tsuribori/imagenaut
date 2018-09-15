@@ -1,22 +1,28 @@
 {% extends parent_template|default:"rules/base_rules.html" %}
 
 {% block rules_content %}
-  <div>
+  <div class="card card-shadow">
+   <div class="content">
     <p>Global Rules:</p>
-    <ul>
+    <ul class="inner">
     {% for global_rule in global_rules %}
       <li>{{ global_rule.text }}</li>
+    {% empty %}
+      <p>No rules yet! Add them in the admin!</p>
     {% endfor %}
     </ul>
+   </div>
   </div>
   {% for board in board_list %}
     {% if board.rules.count > 0 %}
-      <div>
+      <div class="card card-shadow">
+       <div class="content">
         <p>{{ board.name }}:</p>
-        <ul>
+        <ul class="inner">
         {% for rule in board.rules.all %}
           <li>{{ rule.text }}</li> 
         {% endfor %}
+       </div>
       </div>
     {% endif %}
   {% endfor %}

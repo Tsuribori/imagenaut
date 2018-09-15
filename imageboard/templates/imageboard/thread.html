@@ -2,18 +2,21 @@
 {% load imageboard_objects %}
  
 {% block img_content %}
-  
-  {% thread_format thread %}  
-
-  {% for post in thread.cached_posts %}
-    {% post_format post %} 
-  {% endfor %}
-
   <div>
-    {% if thread.archived == False %}
-      {% include "imageboard/userpost_form.html" %}
-    {% else %}
-      <p>Thread archived. You cannot reply anymore.</p>
-    {% endif %}
+    {% thread_format thread %}  
+
+    {% for post in thread.cached_posts %}
+      {% post_format post %} 
+    {% endfor %}
+
+  </div>
+  <div class="card card-shadow">
+    <div class="content">
+      {% if thread.archived == False %}
+        {% include "imageboard/userpost_form.html" %}
+      {% else %}
+        <p>Thread archived. You cannot reply anymore.</p>
+      {% endif %}
+    </div>
   </div>
 {% endblock %} 

@@ -1,7 +1,8 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
 
 {% block img_content %}
-  <div>
+  <div class="card card-shadow">
+   <div class="content">
     <form 
       action="{{ userpost.get_report_url }}"
       method="post">
@@ -16,6 +17,7 @@
       <button type="submit">Report Post</button>
       
     </form>
+   </div>
   </div>
 {% endblock %}
 

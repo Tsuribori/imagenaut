@@ -1,7 +1,8 @@
 {% extends parent_template|default:"moderation/base_moderation.html" %}
 
 {% block mod_content %}
-  <div>
+  <div class="card card-shadow">
+   <div class="content">
     <form
       action=""
       method="post">
@@ -12,5 +13,6 @@
       <button type="submit">
         Ban User</button>
    </form>
+  </div>
  </div>
 {% endblock %}

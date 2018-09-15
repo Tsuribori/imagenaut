@@ -6,18 +6,26 @@
     <h3>{{ board.name }}</h3>
   </div>
   {% for thread in thread_list %}
-    {% thread_format thread %} 
     <div>
-      {% with post_count=thread.posts.count %}
-        <span>{{ post_count }} repl{{ post_count|pluralize:"y,ies" }}</span>
-      {% endwith %}
-      <a href="{{ thread.get_absolute_url }}">
-        View Thread</a>
+      {% thread_format thread %} 
+      <div class="card card-shadow">
+        <div class="content">
+          {% with post_count=thread.posts.count %}
+            <span>{{ post_count }} repl{{ post_count|pluralize:"y,ies" }}</span>
+          {% endwith %}
+          <a href="{{ thread.get_absolute_url }}">
+            View Thread</a>
+        </div>
+      </div>
     </div>
   {% endfor %}
  
   {% if moderation_view == False %}
-    {% include 'imageboard/thread_form.html' %}
+    <div class="card card-shadow">
+      <div class="content">
+        {% include 'imageboard/thread_form.html' %}
+      </div>
+    </div>
   {% endif %}
 
   {% if is_paginated and moderation_board_url %}
