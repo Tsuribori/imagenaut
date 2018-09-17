@@ -1,5 +1,9 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
 
+{% block title %}
+  Report No. {{ thread.thread_number }}
+{% endblock %}
+
 {% block img_content %}
   <div class="card card-shadow">
    <div class="content">

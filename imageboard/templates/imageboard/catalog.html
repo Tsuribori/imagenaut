@@ -1,9 +1,14 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
 {% load thumbnail %}
 
+{% block title %}
+  {{ board.name }} - Catalog
+{% endblock %}
+
 {% block img_content %}
   <div>
-    <h3>{{ board.name }}<h3>
+    <a href="{{ board.get_absolute_url }}">
+      <h3>{{ board.name }}<h3></a>
   </div>
   <span>
     <form
@@ -16,27 +21,43 @@
     </form>
   </span> 
 
-  {% for thread in thread_list %}
-    <div id={{ thread.thread_number }}>
-      <p>
-        {% thumbnail thread.image "200x200" as img %}
-          <a href="{{ thread.image.url }}">
-            <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
-          </a>
-        {% endthumbnail %}
-      </p>
-      <span>R: {{ thread.posts.all.count }}</span>
-      <a href="{{ thread.get_absolute_url }}">
-        View</a>
-      {% if thread.subject %}
-        <p>{{ thread.subject }}</p>
-      {% endif %}
-      <p>{{ thread.post }}</p>
+  <div class="row">
+    {% for thread in thread_list %}
+      <div class="columns three desktop" id={{ thread.thread_number }}>
+        <div class="card card-shadow">
+          <div class="content">
+            <p>
+              {% thumbnail thread.image "200" as img %}
+                <a href="{{ thread.image.url }}">
+                  <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
+                </a>
+              {% endthumbnail %}
+            </p>
+            <span>R: {{ thread.posts.all.count }}</span>
+            <a href="{{ thread.get_absolute_url }}">
+              View</a>
+            {% if thread.subject %}
+              <p>{{ thread.subject }}</p>
+            {% endif %}
+            <p>{{ thread.post|truncatechars:100 }}</p>
+        </div>
+      </div>
     </div>
-
+  
+    
   {% empty %}
     <h3>Nothing found.</h3>
   {% endfor %}
+  </div> 
+
+  <div>
+    <h5>
+      <p class="content text-center">
+        <a href="{{ board.get_absolute_url }}">
+          Back</a> 
+      </p>
+    </h5>
+  </div>
 
 {% endblock %}
       

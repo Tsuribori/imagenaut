@@ -22,9 +22,11 @@ from django.conf import settings
 from imageboard import urls as imageboard_urls
 from moderation import urls as moderation_urls
 from rules import urls as rules_urls
+from navigation import urls as navigation_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('boards/', include(navigation_urls)),
     path('board/', include(imageboard_urls)),
     path('mod/', include((moderation_urls, 'mod'), namespace='dj-mod')),
     path('rules/', include(rules_urls)),

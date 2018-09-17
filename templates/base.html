@@ -15,17 +15,28 @@
   </head>
 
   <body>
-    <nav>
-    </nav>
+    <header>
+      <nav>
+        <label>Imagenaut</label>
+        <ul>
+          <li>
+            <a href="{% url 'navigation_board_list' %}">
+              Board List</a>
+          </li>
+          <li>
+            <a href="{% url 'rules_rule_list' %}">
+              Rules</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
    
-    <div>
-      <div>
-        <main class="container">
-          {% block content %}
-          {% endblock %}
-        </main>
-      </div>
-    </div>
+    <main class="container">
+      {% block content %}
+      {% endblock %}
+    </main>
+      
+    
   </body>
 </html>
        

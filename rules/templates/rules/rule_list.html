@@ -2,27 +2,27 @@
 
 {% block rules_content %}
   <div class="card card-shadow">
-   <div class="content">
-    <p>Global Rules:</p>
-    <ul class="inner">
-    {% for global_rule in global_rules %}
-      <li>{{ global_rule.text }}</li>
-    {% empty %}
-      <p>No rules yet! Add them in the admin!</p>
-    {% endfor %}
-    </ul>
-   </div>
+    <div class="content">
+      <h5>Global Rules:</h5>
+      <ul class="inner">
+      {% for global_rule in global_rules %}
+        <li>{{ global_rule.text }}</li>
+      {% empty %}
+        <p>No rules yet! Add them in the admin!</p>
+      {% endfor %}
+      </ul>
+    </div>
   </div>
   {% for board in board_list %}
     {% if board.rules.count > 0 %}
       <div class="card card-shadow">
-       <div class="content">
-        <p>{{ board.name }}:</p>
-        <ul class="inner">
-        {% for rule in board.rules.all %}
-          <li>{{ rule.text }}</li> 
-        {% endfor %}
-       </div>
+        <div class="content">
+          <h5>{{ board.name }}:</h5>
+          <ul class="inner">
+          {% for rule in board.rules.all %}
+            <li>{{ rule.text }}</li> 
+          {% endfor %}
+        </div>
       </div>
     {% endif %}
   {% endfor %}
