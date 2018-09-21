@@ -3,6 +3,7 @@ from imageboard.models import Board, Thread, UserPost
 from seed.factories import BoardFactory, ThreadFactory, UserPostFactory
 # Create your tests here.
 
+
 class ModelTestCase(TestCase):
    
     def setUp(self):
@@ -72,6 +73,11 @@ class ModelTestCase(TestCase):
     def test_catalog_url(self):
         self.assertEqual(self.board1.get_catalog_url(), '/board/{}/catalog/'.format(self.board1.slug))
 
+    def test_reported_threads_url(self):
+        self.assertEqual(self.board1.get_reported_threads_url(), '/mod/reports/threads/?board={}'.format(self.board1.slug))
+
+    def test_reported_posts_url(self):
+        self.assertEqual(self.board1.get_reported_posts_url(), '/mod/reports/posts/?board={}'.format(self.board1.slug))
 
 class SageTestCase(TestCase):
 

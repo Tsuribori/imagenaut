@@ -1,5 +1,9 @@
 {% extends parent_template|default:"moderation/base_moderation.html" %}
 
+{% block title %}
+  Banned
+{% endblock %}
+
 {% block mod_content %}
 <div class="content">
   {% if transgression_list %}

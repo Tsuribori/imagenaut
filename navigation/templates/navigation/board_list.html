@@ -10,6 +10,11 @@
       <div class="content">
         <a href="{{ board.get_absolute_url }}">
           <h5>{{ board.name }}</h5></a>
+        
+        <a href="{{ board.get_reported_threads_url }}">
+          Reported Threads</a>
+        <a href="{{ board.get_reported_posts_url }}">
+          Reported Posts</a>
         <p>{{ board.description }}</p>
       </div>
     </div>

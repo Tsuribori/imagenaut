@@ -27,6 +27,9 @@
         </div>
       </div>
     </div>
+
+  {% empty %}
+    <p class="text center">No threads found.</p>
   {% endfor %}
  
   {% if moderation_view == False %}

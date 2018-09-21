@@ -22,7 +22,10 @@ class Board(models.Model):
         return reverse('imageboard_thread_create', kwargs={'board': self.slug})
     def get_catalog_url(self):
         return reverse('imageboard_thread_catalog', kwargs={'board': self.slug})
-
+    def get_reported_threads_url(self):
+        return '{}?board={}'.format(reverse('dj-mod:moderation_thread_report_list'), self.slug)
+    def get_reported_posts_url(self):
+        return '{}?board={}'.format(reverse('dj-mod:moderation_userpost_report_list'), self.slug)
     def __str__(self):
         return self.name
 

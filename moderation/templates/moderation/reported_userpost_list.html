@@ -1,6 +1,10 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
 {% load imageboard_objects %}
 
+{% block title %}
+  Reported Posts
+{% endblock %}
+
 {% block img_content %}
   {% for post in post_list %}
     {% post_format post %} 

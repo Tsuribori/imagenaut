@@ -23,6 +23,7 @@ from imageboard import urls as imageboard_urls
 from moderation import urls as moderation_urls
 from rules import urls as rules_urls
 from navigation import urls as navigation_urls
+from navigation.views import Frontpage #Messy solution
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +31,7 @@ urlpatterns = [
     path('board/', include(imageboard_urls)),
     path('mod/', include((moderation_urls, 'mod'), namespace='dj-mod')),
     path('rules/', include(rules_urls)),
+    path('', Frontpage.as_view(), name='navigation_frontpage'),
 ]
 
 if settings.DEBUG:

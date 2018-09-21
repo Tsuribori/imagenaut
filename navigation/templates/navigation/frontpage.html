@@ -1,7 +1,8 @@
-{% extends parent_template|default:"base_navigation.html" %}
+{% extends parent_template|default:"navigation/base_navigation.html" %}
+{% load imageboard_objects %}
 
 {% block title %}
-Imagenaut 
+  Imagenaut 
 {% endblock %}
 
 {% block nav_content %}
@@ -13,4 +14,21 @@ Imagenaut
 
   <div class="card card-shadow">
     <div class="content">
-      
+      <p>Latest posts:</p>
+        {% for post in latest_posts %}
+          {% post_format post %}
+            <div class="card card-shadow">
+              <div class="content">
+                <a href="{{ post.get_absolute_url }}">
+                  View Thread</a>
+              </div>
+            </div>
+        
+        {% empty %} 
+          <p>No latest posts found.</p>
+     
+        {% endfor %}
+    </div>
+  </div>
+     
+{% endblock %} 

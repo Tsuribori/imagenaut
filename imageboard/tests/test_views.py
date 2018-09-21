@@ -21,6 +21,7 @@ class SetUpMixin(TestCase):
         self.thread2 = Thread.objects.create(post='This is a test too!', board=self.board1, ip_address=self.ip_addr)
         self.post1 = UserPost.objects.create(post='JOHNNY GUITAR', thread=self.thread1, ip_address=self.ip_addr)
         self.post2 = UserPost.objects.create(post='I hate john', name='Not john', thread=self.thread2, ip_address=self.ip_addr)
+        self.board_empty = BoardFactory()
         number_of_threads = 21
         for number in range(number_of_threads): #Create 21 thread to test pagination
             Thread.objects.create(post=str(number), board=self.board1, ip_address=self.ip_addr)
@@ -37,6 +38,10 @@ class ViewTestCase(SetUpMixin):
         self.assertTrue('thread_list' in resp.context) 
         self.assertContains(resp, self.thread1.post)
         self.assertFalse(resp.context['moderation_view'])
+
+    def test_empty_board(self): #Test that if board has no threads this is explicitly said
+        resp = self.client.get(self.board_empty.get_absolute_url())
+        self.assertContains(resp, 'No threads found.')
 
     def test_thread_url(self): #Test the thread view
         resp = self.client.get(reverse('imageboard_thread_page', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}))
@@ -282,7 +287,7 @@ class ThreadCatalogTestCase(TestCase):
 
     def test_threads_displayed(self):
         for thread in self.threads:
-            self.assertContains(self.resp_all_threads, thread.post)
+            self.assertContains(self.resp_all_threads, thread.subject)
         
 
     def test_subject_search(self):
@@ -299,6 +304,8 @@ class ThreadCatalogTestCase(TestCase):
         resp = self.client.get('{}?search={}'.format(self.board.get_catalog_url(), 'ÄÖÅ')) #Test with a word the factory can't produce
         self.assertContains(resp, 'Nothing found.')
 
+    def test_back_link(self):
+        self.assertContains(self.resp_all_threads, self.board.get_absolute_url())
   
 
 class ImageTestCase(TestCase): #Test that images are shown 
