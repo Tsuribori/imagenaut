@@ -9,24 +9,24 @@
   {% for post in post_list %}
     {% post_format post %} 
   {% empty %}
-    <h3>No reported posts.</h3>
+    <p>No reported posts.</p>
   {% endfor %}
 
   {% if is_paginated and moderation_board_url %}
-    <div>
+    <div class="pagination no-flex">
       {% for page_number in page_obj.paginator.page_range %}
           <a href="{{ moderation_board_url }}&{{ page_url|cut:"?" }}{{page_number}}">
-            [{{ page_number }}]</a>
+            {{ page_number }}</a>
       {% endfor %}
     </div>
 
   {% endif %}
 
   {% if is_paginated and not moderation_board_url %}
-    <div>
+    <div class="pagination no-flex">
       {% for page_number in page_obj.paginator.page_range %}
           <a href="{{ page_url }}{{page_number}}">
-            [{{ page_number }}]</a>
+            {{ page_number }}</a>
       {% endfor %}
     </div>
   {% endif %}

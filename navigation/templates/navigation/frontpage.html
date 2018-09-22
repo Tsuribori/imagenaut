@@ -17,7 +17,7 @@
       <p>Latest posts:</p>
         {% for post in latest_posts %}
           {% post_format post %}
-            <div class="card card-shadow">
+            <div class="card">
               <div class="content">
                 <a href="{{ post.get_absolute_url }}">
                   View Thread</a>

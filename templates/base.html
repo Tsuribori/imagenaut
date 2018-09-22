@@ -17,7 +17,9 @@
   <body>
     <header>
       <nav>
-        <label>Imagenaut</label>
+        <a href="{% url 'navigation_frontpage' %}">
+          <label>Imagenaut</label>
+        </a>
         <ul>
           <li>
             <a href="{% url 'navigation_board_list' %}">
@@ -27,6 +29,16 @@
             <a href="{% url 'rules_rule_list' %}">
               Rules</a>
           </li>
+          {% if perms.moderation.add_transgression %}
+            <li>
+              <a href="{% url 'dj-mod:moderation_thread_report_list' %}">
+                Reported Threads</a>
+            </li>
+            <li>
+              <a href="{% url 'dj-mod:moderation_userpost_report_list' %}">
+                Reported Posts</a>
+            </li>
+          {% endif %} 
         </ul>
       </nav>
     </header>

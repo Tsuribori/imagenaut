@@ -1,12 +1,16 @@
 from django.test import TestCase
 from django.urls import reverse
-from seed.factories import BoardFactory, UserPostFactory
+from seed.factories import BoardFactory, UserPostFactory, ModeratorFactory
+
 
 class BoardList(TestCase):
 
     def setUp(self):
         self.boards = BoardFactory.create_batch(5)
         self.resp = self.client.get(reverse('navigation_board_list'))
+        mod = ModeratorFactory.create_mod()
+        self.client.force_login(mod)
+        self.mod_resp = self.client.get(reverse('navigation_board_list'))
 
     def test_status_code(self):
         self.assertEqual(self.resp.status_code, 200)
@@ -26,6 +30,22 @@ class BoardList(TestCase):
         for board in self.boards:
             self.assertContains(self.resp, board.get_absolute_url())
 
+    def test_thread_reports_link_not_shown(self):
+        for board in self.boards:
+            self.assertNotContains(self.resp, board.get_reported_threads_url())
+ 
+    def test_post_reports_link_not_shown(self):
+        for board in self.boards:
+            self.assertNotContains(self.resp, board.get_reported_posts_url())
+
+    def test_thread_reports_link_shown(self):
+        for board in self.boards:
+            self.assertContains(self.mod_resp, board.get_reported_threads_url())
+ 
+    def test_post_reports_link_shown(self):
+        for board in self.boards:
+            self.assertContains(self.mod_resp, board.get_reported_posts_url())
+   
 
 class Frontpage(TestCase):
 
