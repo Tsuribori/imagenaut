@@ -51,7 +51,7 @@ class Thread(models.Model, DateMixin):
     reported = models.BooleanField(default=False)
     image = ImageField(upload_to='images/', blank=False)
     pinned = models.BooleanField(default=False)
-    embed = EmbedVideoField(blank=True, null=True)
+    embed = EmbedVideoField(blank=True, null=True, help_text='Youtube, Vimeo or Soundcloud URL')
 
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
@@ -100,7 +100,7 @@ class UserPost(models.Model, DateMixin):
     sage = models.BooleanField(default=False)
     reported = models.BooleanField(default=False)
     image = ImageField(upload_to='images/', blank=True, null=True)
-    embed = EmbedVideoField(blank=True, null=True)
+    embed = EmbedVideoField(blank=True, null=True, help_text='Youtube, Vimeo or Soundcloud URL')
 
     def __str__(self):
         return str(self.post_number)

@@ -10,7 +10,7 @@
   <span>{{ thread.get_date }}</span>
   <span>No. {{ thread.thread_number }}</span>
   {% if thread.pinned %}
-    <span>[P]</span>
+    <span>Pinned</span>
   {% endif %}
   {% if moderation_view == False %}
     <a href="{{ thread.get_report_url }}">
@@ -30,16 +30,20 @@
   {% endif %}
   <div>
     <div class="grid-flex">
-      <p class="content">
+      <div class="content">
         {% thumbnail thread.image "200x200" as img %}
           <a href="{{ thread.image.url }}">
             <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
           </a>
         {% endthumbnail %}
-      </p>
+      </div>
     </div>
-    <div class="content">
-      {% video thread.embed small %}
+    <div>
+      <div class="grid-flex">
+        <div class="content">
+          {% video thread.embed '100% x 100%' %}
+        </div>
+      </div>
       <p>{{ thread.post }}</p>
     </div>
   </div>

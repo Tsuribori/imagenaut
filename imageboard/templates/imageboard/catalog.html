@@ -26,13 +26,15 @@
       <div class="columns three desktop" id={{ thread.thread_number }}>
         <div class="card card-shadow">
           <div class="content">
-            <p>
-              {% thumbnail thread.image "200" as img %}
-                <a href="{{ thread.image.url }}">
-                  <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
-                </a>
-              {% endthumbnail %}
-            </p>
+            <div class="grid-flex">
+              <div class="content">
+                {% thumbnail thread.image "200" as img %}
+                  <a href="{{ thread.image.url }}">
+                    <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
+                  </a>
+                {% endthumbnail %}
+              </div>
+            </div>
             <span>R: {{ thread.posts.all.count }}</span>
             <a href="{{ thread.get_absolute_url }}">
               View</a>

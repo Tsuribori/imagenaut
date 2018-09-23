@@ -25,17 +25,21 @@
   <div>
     <div class="grid-flex">
       {% if post.image %}
-        <p class="content">
+        <div class="content">
           {% thumbnail post.image "200x200" as img %}
             <a href="{{ post.image.url }}">
-              <img src="{{ img.url }}" height="{{ img.width }}" height="{{ img.height }}">
+              <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
             </a>
           {% endthumbnail %}
-        </p>
+        </div>
       {% endif %}
     </div>
-    <div class="content">
-      {% video post.embed small %}
+    <div>
+      <div class="grid-flex">
+        <div class="content">
+          {% video post.embed '100% x 100%' %}
+        </div>
+      </div>
       <p>{{ post.post }}</p>
     </div>
   </div>
