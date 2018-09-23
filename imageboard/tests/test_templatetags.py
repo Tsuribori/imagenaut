@@ -5,7 +5,9 @@ from seed.factories import ThreadFactory, UserPostFactory, ModeratorFactory
 class ThreadFormat(TestCase):
 
     def setUp(self):
-        self.thread = ThreadFactory()
+        embed_link = 'http://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        self.embed_code = 'dQw4w9WgXcQ' #The embed_video template tag will transform the url so the unique part must be used to check if the embed is displayed
+        self.thread = ThreadFactory(embed=embed_link)
         context = Context({'thread': self.thread, 
             'moderation_view': False})
         template_to_render = Template('{% load imageboard_objects %} {% thread_format thread %}')
@@ -20,6 +22,9 @@ class ThreadFormat(TestCase):
 
     def test_report(self):
         self.assertIn(self.thread.get_report_url(), self.rendered)
+  
+    def test_embed(self):
+        self.assertIn(self.embed_code, self.rendered)
 
     def test_post(self):
         self.assertIn(self.thread.post, self.rendered)
@@ -54,7 +59,9 @@ class ThreadFormatMod(TestCase):
 class UserPostFormat(TestCase):
 
     def setUp(self):
-        self.post = UserPostFactory()
+        embed_link = 'http://www.youtube.com/watch?v=dQw4w9WgXcQ'
+        self.embed_code = 'dQw4w9WgXcQ' 
+        self.post = UserPostFactory(embed=embed_link)
         context = Context({'post': self.post, 
             'moderation_view': False})
         template_to_render = Template('{% load imageboard_objects %} {% post_format post %}')
@@ -66,6 +73,9 @@ class UserPostFormat(TestCase):
 
     def test_report(self):
         self.assertIn(self.post.get_report_url(), self.rendered)
+
+    def test_embed(self):
+        self.assertIn(self.embed_code, self.rendered)
 
     def test_post(self):
         self.assertIn(self.post.post, self.rendered)

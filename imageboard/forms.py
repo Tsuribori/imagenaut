@@ -12,7 +12,7 @@ class ThreadForm(forms.ModelForm, GetIPMixin, CooldownMixin):
 
     class Meta:
         model = Thread
-        fields = ['subject', 'name', 'post', 'image']
+        fields = ['subject', 'name', 'post', 'image', 'embed']
         widgets = {
             'post': forms.Textarea(),
         }
@@ -34,7 +34,7 @@ class UserPostForm(forms.ModelForm, GetIPMixin, CooldownMixin):
     
     class Meta:
         model = UserPost
-        fields = ['name', 'sage', 'post', 'image']
+        fields = ['name', 'sage', 'post', 'image', 'embed']
         widgets = {
             'post': forms.Textarea(),
         }

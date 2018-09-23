@@ -1,5 +1,5 @@
 {% load thumbnail %}
-
+{% load embed_video_tags %}
 
 <div id={{ thread.thread_number }} class="card">
 <div class="content">
@@ -38,8 +38,9 @@
         {% endthumbnail %}
       </p>
     </div>
-    <div>
-      <p>{{ thread.post|linebreaks }}</p>
+    <div class="content">
+      {% video thread.embed small %}
+      <p>{{ thread.post }}</p>
     </div>
   </div>
 

@@ -221,7 +221,7 @@ class ThreadReportPagination(TestCase):
         self.resp2 = self.client.get('{}?board={}&page=2'.format(reverse('dj-mod:moderation_thread_report_list'), self.board.slug))
         
     def test_link_in_page(self):
-        self.assertContains(self.resp, "<a href='?board={}&page=2'>[2]</a>".format(self.board.slug), html=True)
+        self.assertContains(self.resp, "<a href='?board={}&page=2'>2</a>".format(self.board.slug), html=True)
 
  
     def test_first_page(self):
@@ -283,7 +283,7 @@ class UserPostReportPagination(TestCase):
         
 
     def test_link_in_page(self):
-        self.assertContains(self.resp, "<a href='?board={}&page=2'>[2]</a>".format(self.board.slug), html=True)
+        self.assertContains(self.resp, "<a href='?board={}&page=2'>2</a>".format(self.board.slug), html=True)
 
  
     def test_first_page(self):
