@@ -3,7 +3,7 @@
 
 <div id={{ post.post_number }} class="card">
 <div class="content">
-  <span>{{ post.name }}</span>
+  <span class="text-success">{{ post.name }}</span>
   {% if post.poster_id %}
     <span class="text-warning">{{ post.poster_id }}</span>
   {% endif %}
@@ -43,7 +43,7 @@
           {% video post.embed '100% x 100%' %}
         </div>
       </div>
-      <p>{{ post.post }}</p>
+      <p class="content">{{ post.post }}</p>
     </div>
   </div>
 

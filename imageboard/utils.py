@@ -1,4 +1,6 @@
+import re
 from django.conf import settings 
+from django.core.signing import Signer
 from .models import Thread, UserPost
 from moderation.models import Transgression
 from imageboard.models import Board
@@ -57,4 +59,15 @@ class CooldownMixin():
             if timezone.now() - post.time_made < timedelta(seconds=cooldown):
                 return True
         return False
-        
+       
+
+class MakeTripcode():
+
+    def create_tripcode(self, string):
+        match = re.search('#[\d\w\s]+', string)
+        if match: 
+            password = match.group(0)
+            signer = Signer()
+            tripcode = '!{}'.format(signer.sign(password)[-10:])
+            string = string.replace(password, tripcode)
+        return string

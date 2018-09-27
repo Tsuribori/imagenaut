@@ -6,7 +6,7 @@
   {% if thread.subject %}
     <span>{{ thread.subject }}</span>
   {% endif %}
-  <span>{{ thread.name }}</span>
+  <span class="text-success">{{ thread.name }}</span>
    {% if thread.id_enabled %}
     <span class="text-warning">{{ thread.poster_id }}</span>
   {% endif %}
@@ -47,7 +47,7 @@
           {% video thread.embed '100% x 100%' %}
         </div>
       </div>
-      <p>{{ thread.post }}</p>
+      <p class="content">{{ thread.post }}</p>
     </div>
   </div>
 
