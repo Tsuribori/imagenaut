@@ -7,10 +7,13 @@
     <span>{{ thread.subject }}</span>
   {% endif %}
   <span>{{ thread.name }}</span>
+   {% if thread.id_enabled %}
+    <span class="text-warning">{{ thread.poster_id }}</span>
+  {% endif %}
   <span>{{ thread.get_date }}</span>
-  <span>No. {{ thread.thread_number }}</span>
+  <span>No. {{ thread.thread_number }}</span> 
   {% if thread.pinned %}
-    <span>Pinned</span>
+    <span class="text-error">Pinned</span>
   {% endif %}
   {% if moderation_view == False %}
     <a href="{{ thread.get_report_url }}">

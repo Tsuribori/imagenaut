@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.template import Context, Template
 from seed.factories import ThreadFactory, UserPostFactory, ModeratorFactory
 
@@ -29,7 +29,20 @@ class ThreadFormat(TestCase):
     def test_post(self):
         self.assertIn(self.thread.post, self.rendered)
 
-        
+
+
+class ThreadIDFormat(TestCase): 
+
+    def setUp(self):
+        self.thread = ThreadFactory(id_enabled=True)
+        context = Context({'thread': self.thread, 'moderation_view': False})
+        template_to_render = Template('{% load imageboard_objects %} {% thread_format thread %}')
+        self.rendered = template_to_render.render(context)
+
+    def test_id(self):
+        self.assertIn(self.thread.poster_id, self.rendered)
+
+
 class ThreadFormatMod(TestCase):
 
     def setUp(self):
@@ -80,6 +93,18 @@ class UserPostFormat(TestCase):
     def test_post(self):
         self.assertIn(self.post.post, self.rendered)
 
+
+class UserPostIDFormat(TestCase):
+  
+    def setUp(self):
+        self.post = UserPostFactory(thread__id_enabled=True) 
+        context = Context({'post': self.post, 
+            'moderation_view': False})
+        template_to_render = Template('{% load imageboard_objects %} {% post_format post %}')
+        self.rendered = template_to_render.render(context)
+
+    def test_id(self):
+        self.assertIn(self.post.poster_id, self.rendered)
 
 class UserPostFormatMod(TestCase):
 

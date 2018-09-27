@@ -1,4 +1,5 @@
 from django.test import TestCase, tag
+from django.core.signing import Signer
 from imageboard.models import Board, Thread, UserPost
 from seed.factories import BoardFactory, ThreadFactory, UserPostFactory
 # Create your tests here.
@@ -147,3 +148,37 @@ class PinnedOrdering(TestCase): #Test that pinned threads are always displayed f
     def test_ordering(self):
         threads = Thread.objects.all()
         self.assertEqual(threads[0], self.pinned_thread)
+
+
+class PosterID(TestCase):
+
+    def setUp(self):
+        self.thread = ThreadFactory(id_enabled=True)
+        self.post = UserPostFactory(thread=self.thread)
+        value1 = str(self.post.ip_address) + str(self.thread.thread_number)
+        value2 = str(self.thread.ip_address) + str(self.thread.thread_number)
+        signer = Signer() 
+        self.unique_post_id = signer.sign(value1)[-10:]
+        self.unique_thread_id = signer.sign(value2)[-10:]
+
+
+    def test_id_enabled(self):
+        self.assertTrue(self.thread.id_enabled)
+
+    def test_thread_id_exists(self):
+        self.assertTrue(self.thread.poster_id)
+
+    def test_poster_id_exists(self):
+        self.assertTrue(self.post.poster_id)
+
+    def test_thread_is_length(self):
+        self.assertEqual(len(self.thread.poster_id), 10)
+
+    def test_post_id_length(self):
+        self.assertEqual(len(self.post.poster_id), 10)
+
+    def test_thread_hashes_match(self):
+        self.assertEqual(self.thread.poster_id, self.unique_thread_id)
+
+    def test_post_hashes_match(self):
+        self.assertEqual(self.post.poster_id, self.unique_post_id)

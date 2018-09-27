@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from datetime import datetime
 from django.utils import timezone
+from django.core.signing import Signer
 from sorl.thumbnail import ImageField
 from embed_video.fields import EmbedVideoField
 #from django.utils.functional import cached_property
@@ -52,6 +53,8 @@ class Thread(models.Model, DateMixin):
     image = ImageField(upload_to='images/', blank=False)
     pinned = models.BooleanField(default=False)
     embed = EmbedVideoField(blank=True, null=True, help_text='Youtube, Vimeo or Soundcloud URL')
+    id_enabled = models.BooleanField(default=False, verbose_name='Enable poster IDs')
+    poster_id = models.CharField(max_length=30, null=True)
 
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
@@ -69,6 +72,12 @@ class Thread(models.Model, DateMixin):
     def get_report_dismiss_url(self):
         return reverse('dj-mod:moderation_thread_report_dismiss', kwargs={'thread_number': self.thread_number})
 
+    def generate_poster_id(self):
+        value = str(self.ip_address) + str(self.thread_number)
+        signer = Signer()
+        unique_id = signer.sign(value)[-10:] #Get the last ten chars of the hash
+        return unique_id
+
  
     def save(self, *args, **kwargs):
         active_threads = Thread.objects.filter(board=self.board, archived=False).count()
@@ -76,6 +85,8 @@ class Thread(models.Model, DateMixin):
             last_thread = Thread.objects.filter(board=self.board, archived=False).earliest('bumb_order') #Get the last thread i.e. the one with the lowest bumb_order
             last_thread.archived = True #Archive it
             last_thread.save()
+        if self.id_enabled:
+            self.poster_id = self.generate_poster_id()
         super(Thread, self).save(*args, **kwargs)
 
     class Meta:
@@ -101,6 +112,7 @@ class UserPost(models.Model, DateMixin):
     reported = models.BooleanField(default=False)
     image = ImageField(upload_to='images/', blank=True, null=True)
     embed = EmbedVideoField(blank=True, null=True, help_text='Youtube, Vimeo or Soundcloud URL')
+    poster_id = models.CharField(max_length=30, null=True)
 
     def __str__(self):
         return str(self.post_number)
@@ -117,6 +129,13 @@ class UserPost(models.Model, DateMixin):
             'board': self.thread.board.slug, 'thread_number': self.thread.thread_number, 'post_number': self.post_number})
     def get_report_dismiss_url(self):
         return reverse('dj-mod:moderation_userpost_report_dismiss', kwargs={'post_number': self.post_number})
+
+
+    def generate_poster_id(self): #Generate a poster id for a thread based on the posters IP and the threads number. 
+        value = str(self.ip_address) + str(self.thread.thread_number)
+        signer = Signer()
+        unique_id = signer.sign(value)[-10:] #Get the last ten chars of the hash
+        return unique_id
     
     def save(self, *args, **kwargs):
         if self.sage==False and self.thread.bumb_limit_reached==False:
@@ -126,6 +145,8 @@ class UserPost(models.Model, DateMixin):
             self.thread.archived = True
         elif post_count >= 349:
             self.thread.bumb_limit_reached = True
+        if self.thread.id_enabled: 
+            self.poster_id = self.generate_poster_id()
         self.thread.save()
         super(UserPost, self).save(*args, **kwargs)
 

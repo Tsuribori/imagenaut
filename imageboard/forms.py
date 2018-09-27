@@ -12,7 +12,7 @@ class ThreadForm(forms.ModelForm, GetIPMixin, CooldownMixin):
 
     class Meta:
         model = Thread
-        fields = ['subject', 'name', 'post', 'image', 'embed']
+        fields = ['subject', 'name', 'post', 'image', 'embed', 'id_enabled']
         widgets = {
             'post': forms.Textarea(),
         }

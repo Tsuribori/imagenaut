@@ -4,6 +4,9 @@
 <div id={{ post.post_number }} class="card">
 <div class="content">
   <span>{{ post.name }}</span>
+  {% if post.poster_id %}
+    <span class="text-warning">{{ post.poster_id }}</span>
+  {% endif %}
   <span>{{ post.get_date }}</span>
   <span>No. {{ post.post_number }}</span>
   {% if moderation_view == False %}
