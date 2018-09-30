@@ -5,7 +5,7 @@
 <div class="content">
   <span class="text-success">{{ post.name }}</span>
   {% if post.poster_id %}
-    <span class="text-warning">{{ post.poster_id }}</span>
+    <span class="text-warning">ID: {{ post.poster_id }}</span>
   {% endif %}
   <span>{{ post.get_date }}</span>
   <span>No. {{ post.post_number }}</span>
@@ -25,27 +25,25 @@
     <a href="{{ post.get_delete_url }}">
       Delete</a>
   {% endif %}
-  <div>
+  {% if post.image %}
     <div class="grid-flex">
-      {% if post.image %}
-        <div class="content">
-          {% thumbnail post.image "200x200" as img %}
-            <a href="{{ post.image.url }}">
-              <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
-            </a>
-          {% endthumbnail %}
-        </div>
-      {% endif %}
+      {% thumbnail post.image "200x200" as img %}
+        <a href="{{ post.image.url }}">
+          <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
+        </a>
+      {% endthumbnail %}
     </div>
-    <div>
-      <div class="grid-flex">
-        <div class="content">
-          {% video post.embed '100% x 100%' %}
-        </div>
+  {% endif %}
+  
+  {% if post.embed %}
+    <div class="grid-flex">
+      <div class="content">
+        {% video post.embed '100% x 100%' %}
       </div>
-      <p class="content">{{ post.post }}</p>
     </div>
-  </div>
+  {% endif %}
+
+  <p>{{ post.post }}</p>
 
 </div>
 </div>

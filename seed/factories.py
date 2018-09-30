@@ -2,10 +2,12 @@ import factory
 import pytz
 import os
 import sys
+from datetime import timedelta
 from faker import Factory
 from django.contrib.auth.models import User, Permission
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
+from django.utils import timezone
 from imageboard.models import Board, Thread, UserPost
 from moderation.models import Transgression
 from rules.models import Rule
@@ -81,3 +83,17 @@ class ImageFactory():
     def __new__(cls):
         img = open(os.path.join(settings.BASE_DIR, 'seed/example_picture.jpg'), 'rb')
         return SimpleUploadedFile(img.name, img.read())
+
+class DateFactory():
+    def last_year():
+        return timezone.now() - timedelta(days=365.3)
+
+    def last_month():
+        now = timezone.now()
+        if now.day < 15:
+            return now - timedelta(days=15)
+        else:
+           return now - timedelta(days=31)
+
+    def yesterday():
+        return timezone.now() - timedelta(days=1)

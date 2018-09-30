@@ -8,7 +8,7 @@
   {% endif %}
   <span class="text-success">{{ thread.name }}</span>
    {% if thread.id_enabled %}
-    <span class="text-warning">{{ thread.poster_id }}</span>
+    <span class="text-warning">ID: {{ thread.poster_id }}</span>
   {% endif %}
   <span>{{ thread.get_date }}</span>
   <span>No. {{ thread.thread_number }}</span> 
@@ -31,25 +31,24 @@
     <a href="{{ thread.get_delete_url }}">
       Delete</a>
   {% endif %}
-  <div>
+    
+  {% thumbnail thread.image "200x200" as img %}
+    <div class="grid-flex">
+      <a href="{{ thread.image.url }}">
+        <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
+      </a>
+    </div>
+  {% endthumbnail %}
+    
+  {% if thread.embed %}
     <div class="grid-flex">
       <div class="content">
-        {% thumbnail thread.image "200x200" as img %}
-          <a href="{{ thread.image.url }}">
-            <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
-          </a>
-        {% endthumbnail %}
+        {% video thread.embed '100% x 100%' %}
       </div>
     </div>
-    <div>
-      <div class="grid-flex">
-        <div class="content">
-          {% video thread.embed '100% x 100%' %}
-        </div>
-      </div>
-      <p class="content">{{ thread.post }}</p>
-    </div>
-  </div>
+  {% endif %}
+
+  <p>{{ thread.post }}</p>
 
 </div>
 </div>

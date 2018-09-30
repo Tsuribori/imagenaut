@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'seed',
     'rules',
     'navigation',
+    'archives',
 ]
 
 MIDDLEWARE = [

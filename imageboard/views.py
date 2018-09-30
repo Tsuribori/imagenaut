@@ -126,6 +126,7 @@ class UserPostDelete(PermissionRequiredMixin, DeleteView):
     def get_success_url(self):
         return self.userpost.thread.get_absolute_url()
 
+  
 class ThreadReport(View):
     template_name = 'imageboard/thread_report_confirm.html'
 
@@ -152,9 +153,7 @@ class UserPostReport(View):
         post.save()
         return redirect(post)
 
-#class ThreadImageDelete(View):
-#    template_name = 'imageboard/thread_image_delete.html'
-  
+
 
 class ThreadCatalog(ListView):
     model = Thread

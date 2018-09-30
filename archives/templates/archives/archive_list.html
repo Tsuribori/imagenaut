@@ -1,0 +1,33 @@
+{% extends parent_template|default:"archives/base_archives.html" %}
+{% load imageboard_objects %}
+
+{% block arc_content %}
+  
+  <div>
+    {% for thread in thread_list %}
+      {% thread_format thread %}
+      <div class="card">
+        <div class="content">
+          {% with post_count=thread.posts.count %}
+            <span>{{ post_count }} repl{{ post_count|pluralize:"y,ies" }}</span>
+          {% endwith %}
+          <a href="{{ thread.get_absolute_url }}">
+            View Thread</a>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text center">No results.</p>
+    {% endfor %}
+  </div>
+
+  {% if is_paginated %}
+    <div class="pagination no-flex">
+      {% for page_number in page_obj.paginator.page_range %}
+        <a href="{{ page_url }}{{ page_number }}">
+          {{ page_number }}
+        </a>
+      {% endfor %}
+    </div>
+  {% endif %} 
+
+{% endblock %} 

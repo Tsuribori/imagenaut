@@ -28,6 +28,8 @@ class Board(models.Model):
         return '{}?board={}'.format(reverse('dj-mod:moderation_thread_report_list'), self.slug)
     def get_reported_posts_url(self):
         return '{}?board={}'.format(reverse('dj-mod:moderation_userpost_report_list'), self.slug)
+    def get_archive_url(self):
+        return reverse('archive_thread_list', kwargs={'board': self.slug})
     def __str__(self):
         return self.name
 
@@ -42,7 +44,7 @@ class Thread(models.Model, DateMixin):
     thread_number = models.PositiveIntegerField(unique=True, default=get_thread_number)
     subject = models.CharField(max_length=50, blank=True)
     name = models.CharField(max_length=20, default='Anonymous')
-    time_made = models.DateTimeField(auto_now_add=True)
+    time_made = models.DateTimeField(default=timezone.now)
     post = models.CharField(max_length=5000, blank=False)
     bumb_order = models.DateTimeField(auto_now_add=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='threads')
@@ -54,7 +56,7 @@ class Thread(models.Model, DateMixin):
     pinned = models.BooleanField(default=False)
     embed = EmbedVideoField(blank=True, null=True, help_text='Youtube, Vimeo or Soundcloud URL')
     id_enabled = models.BooleanField(default=False, verbose_name='Enable poster IDs')
-    poster_id = models.CharField(max_length=30, null=True)
+    poster_id = models.CharField(max_length=30, null=True, blank=True)
 
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
