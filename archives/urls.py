@@ -4,7 +4,7 @@ from .views import ThreadArchive, ThreadYearArchive, ThreadMonthArchive, ThreadD
 
 urlpatterns = [
     path('<slug:board>/', ThreadArchive.as_view(), name='archive_thread_list'),  
-    path('<slug:board>/<int:year>/', ThreadYearArchive.as_view(), name='arhive_thread_year_list'),
+    path('<slug:board>/<int:year>/', ThreadYearArchive.as_view(), name='archive_thread_year_list'),
     path('<slug:board>/<int:year>/<int:month>/', ThreadMonthArchive.as_view(month_format='%m'), name='archive_thread_month_list'),
     path('<slug:board>/<int:year>/<int:month>/<int:day>/', ThreadDayArchive.as_view(month_format='%m'), name='archive_thread_day_list'),
 ]

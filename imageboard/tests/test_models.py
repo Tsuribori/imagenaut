@@ -4,7 +4,7 @@ from imageboard.models import Board, Thread, UserPost
 from seed.factories import BoardFactory, ThreadFactory, UserPostFactory
 # Create your tests here.
 
-
+@tag('current')
 class ModelTestCase(TestCase):
    
     def setUp(self):
@@ -79,6 +79,20 @@ class ModelTestCase(TestCase):
 
     def test_reported_posts_url(self):
         self.assertEqual(self.board1.get_reported_posts_url(), '/mod/reports/posts/?board={}'.format(self.board1.slug))
+
+    def test_archive_url(self):
+        self.assertEqual(self.thread1.get_archive_url(), '/archive/{}/'.format(self.board1.slug))
+
+    def test_archive_year_url(self):
+        self.assertEqual(self.thread1.get_archive_year_url(), '/archive/{}/{}/'.format(self.board1.slug, self.thread1.time_made.year))
+
+    def test_archive_month_url(self):
+        self.assertEqual(self.thread1.get_archive_month_url(), '/archive/{}/{}/{}/'.format(
+            self.board1.slug, self.thread1.time_made.year, self.thread1.time_made.month))
+     
+    def test_archive_day_url(self):
+        self.assertEqual(self.thread1.get_archive_day_url(), '/archive/{}/{}/{}/{}/'.format(
+            self.board1.slug, self.thread1.time_made.year, self.thread1.time_made.month, self.thread1.time_made.day))
 
 class SageTestCase(TestCase):
 

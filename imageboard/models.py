@@ -73,6 +73,15 @@ class Thread(models.Model, DateMixin):
         return reverse('imageboard_thread_report', kwargs={'board': self.board.slug, 'thread_number': self.thread_number})
     def get_report_dismiss_url(self):
         return reverse('dj-mod:moderation_thread_report_dismiss', kwargs={'thread_number': self.thread_number})
+    def get_archive_url(self):
+        return reverse('archive_thread_list', kwargs={'board': self.board.slug})
+    def get_archive_year_url(self):
+        return reverse('archive_thread_year_list', kwargs={'board': self.board.slug, 'year': self.time_made.year})
+    def get_archive_month_url(self):
+        return reverse('archive_thread_month_list', kwargs={'board': self.board.slug, 'year': self.time_made.year, 'month': self.time_made.month})
+    def get_archive_day_url(self):
+        return reverse(
+            'archive_thread_day_list', kwargs={'board': self.board.slug, 'year': self.time_made.year, 'month': self.time_made.month, 'day': self.time_made.day})
 
     def generate_poster_id(self):
         value = str(self.ip_address) + str(self.thread_number)

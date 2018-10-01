@@ -43,7 +43,7 @@ class ThreadYearArchiveTest(TestCase):
         self.board = BoardFactory()
         self.threads = ThreadFactory.create_batch(5, time_made=last_year, board=self.board, archived=True)
         self.not_archived = ThreadFactory(time_made=last_year, board=self.board, archived=False)
-        self.resp = self.client.get('{}{}/'.format(self.board.get_archive_url(), last_year.year)) 
+        self.resp = self.client.get(self.threads[0].get_archive_year_url())
        
 
     def test_status(self):
@@ -75,7 +75,7 @@ class ThreadMonthArchiveTest(TestCase):
         self.board = BoardFactory()
         self.threads = ThreadFactory.create_batch(5, time_made=last_month, board=self.board, archived=True)
         self.not_archived = ThreadFactory(time_made=last_month, board=self.board, archived=False)
-        self.resp = self.client.get('{}{}/{}/'.format(self.board.get_archive_url(), last_month.year, last_month.month)) 
+        self.resp = self.client.get(self.threads[0].get_archive_month_url())
 
     def test_status(self):
         self.assertEqual(self.resp.status_code, 200)
@@ -105,7 +105,7 @@ class ThreadDayArchiveTest(TestCase):
         self.board = BoardFactory()
         self.threads = ThreadFactory.create_batch(5, time_made=yesterday, board=self.board, archived=True)
         self.not_archived = ThreadFactory(time_made=yesterday, board=self.board, archived=False)
-        self.resp = self.client.get('{}{}/{}/{}/'.format(self.board.get_archive_url(), yesterday.year, yesterday.month, yesterday.day)) 
+        self.resp = self.client.get(self.threads[0].get_archive_day_url())
 
     def test_status(self):
         self.assertEqual(self.resp.status_code, 200)
