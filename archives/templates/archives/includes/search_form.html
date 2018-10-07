@@ -1,0 +1,13 @@
+<div class="card card-shadow">
+  <div class="content">
+    <form 
+      action="{% url 'archive_search_form' %}"
+      method="post"
+      enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">
+      Search</button>
+    </form>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
 {% load imageboard_objects %}
+{% load url_replace %}
 
 {% block title %}
   {{ board.name }}
@@ -32,24 +33,16 @@
     <p class="text center">No threads found.</p>
   {% endfor %}
 
-  {% if is_paginated and moderation_board_url %}
+  {% if is_paginated %}
     <div class="pagination no-flex">
       {% for page_number in page_obj.paginator.page_range %}
-          <a href="{{ moderation_board_url }}&{{ page_url|cut:"?" }}{{page_number}}">
+          <a href="?{% url_replace page=page_number %}">
             {{ page_number }}</a>
       {% endfor %}
     </div>
 
   {% endif %}
 
-  {% if is_paginated and not moderation_board_url %}
-    <div class="pagination no-flex">
-      {% for page_number in page_obj.paginator.page_range %}
-          <a href="{{ page_url }}{{page_number}}">
-            {{ page_number }}</a>
-      {% endfor %}
-    </div>
-  {% endif %}
  
   {% if moderation_view == False %}
     <div class="card card-shadow">

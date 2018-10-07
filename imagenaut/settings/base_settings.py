@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rules',
     'navigation',
     'archives',
+    'core',
 ]
 
 MIDDLEWARE = [

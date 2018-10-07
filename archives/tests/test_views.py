@@ -1,7 +1,52 @@
+from django.urls import reverse
 from django.test import TestCase, tag
+from archives.forms import ArchiveSearchForm
 from seed.factories import faker, BoardFactory, ThreadFactory, DateFactory
 
 #There are several almost identical tests in this page. This is to futureproof for potential changes to views and also due to clumsy pagination
+
+@tag('archive')
+class ArchiveSearchTestCase(TestCase):
+
+    def setUp(self):
+        self.resp = self.client.get(reverse('archive_search_form'))
+
+    def test_status(self):
+        self.assertEqual(self.resp.status_code, 200)
+ 
+    def test_template(self):
+        self.assertTemplateUsed(self.resp, 'archives/search_page.html')
+
+    def test_form_context(self):
+        self.assertTrue('form' in self.resp.context)
+
+#Test that submitting a form redirects correctly based on the values
+@tag('archive')
+class ArchiveSearchFormPost(TestCase):
+
+    def setUp(self):
+        self.board = BoardFactory()
+        self.thread = ThreadFactory(time_made=DateFactory.last_year(), archived=True, board=self.board)
+        self.time = self.thread.time_made
+
+    def test_board_url(self):
+        resp = self.client.post(reverse('archive_search_form'), {'board': self.board.name})
+        self.assertRedirects(resp, expected_url=self.board.get_archive_url())
+      
+    def test_year_url(self):
+        resp = self.client.post(reverse('archive_search_form'), 
+            {'board': self.board.name, 'year': self.time.year})
+        self.assertRedirects(resp, expected_url=self.thread.get_archive_year_url())
+
+    def test_month_url(self):
+        resp = self.client.post(reverse('archive_search_form'),
+            {'board': self.board.name, 'year': self.time.year, 'month': self.time.month})
+        self.assertRedirects(resp, expected_url=self.thread.get_archive_month_url())
+
+    def test_day_url(self):
+        resp = self.client.post(reverse('archive_search_form'),
+          {'board': self.board.name, 'year': self.time.year, 'month': self.time.month, 'day': self.time.day})  
+        self.assertRedirects(resp, expected_url=self.thread.get_archive_day_url())
 
 @tag('archive')
 class ThreadArchiveTestCase(TestCase):
@@ -33,7 +78,8 @@ class ThreadArchiveTestCase(TestCase):
     def test_context(self):
         self.assertFalse(self.resp.context['moderation_view'])
 
-
+    def test_form_context(self):
+        self.assertTrue('form' in self.resp.context)
 
 @tag('archive')
 class ThreadYearArchiveTest(TestCase):
@@ -66,6 +112,9 @@ class ThreadYearArchiveTest(TestCase):
     def test_context(self):
         self.assertFalse(self.resp.context['moderation_view'])
 
+    def test_form_context(self):
+        self.assertTrue('form' in self.resp.context)
+
 
 @tag('archive')
 class ThreadMonthArchiveTest(TestCase):
@@ -97,6 +146,9 @@ class ThreadMonthArchiveTest(TestCase):
     def test_context(self):
         self.assertFalse(self.resp.context['moderation_view'])
 
+    def test_form_context(self):
+        self.assertTrue('form' in self.resp.context)
+
 @tag('archive')
 class ThreadDayArchiveTest(TestCase):
 
@@ -126,6 +178,9 @@ class ThreadDayArchiveTest(TestCase):
 
     def test_context(self):
         self.assertFalse(self.resp.context['moderation_view'])
+
+    def test_form_context(self):
+        self.assertTrue('form' in self.resp.context)
 
 
 @tag('archive', 'slow')
@@ -164,8 +219,8 @@ class ThreadDatePagination(TestCase):
         self.board = BoardFactory()
         self.thread = ThreadFactory(time_made=last_year, board=self.board, archived=True)
         self.threads = ThreadFactory.create_batch(50, time_made=last_year, board=self.board, archived=True)
-        self.first_page = self.client.get('{}{}/'.format(self.board.get_archive_url(), last_year.year))
-        self.second_page = self.client.get('{}{}/?page=2'.format(self.board.get_archive_url(), last_year.year))
+        self.first_page = self.client.get(self.thread.get_archive_year_url())
+        self.second_page = self.client.get('{}?page=2'.format(self.thread.get_archive_year_url()))
 
     def test_first_page(self):
         for thread in self.threads:

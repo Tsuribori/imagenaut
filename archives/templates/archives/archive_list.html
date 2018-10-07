@@ -3,6 +3,8 @@
 
 {% block arc_content %}
   
+  {% include 'archives/includes/search_form.html' %}
+ 
   <div>
     {% for thread in thread_list %}
       {% thread_format thread %}

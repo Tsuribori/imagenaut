@@ -82,8 +82,6 @@ class ReportedThreadList(PermissionRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['page_url'] = '?page='
         context['moderation_view'] = True
-        if self.board:
-            context['moderation_board_url'] = '?board={}'.format(self.board)
         return context
     
 
@@ -112,8 +110,6 @@ class ReportedUserPostList(PermissionRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['page_url'] = '?page='
         context['moderation_view'] = True
-        if self.board:
-            context['moderation_board_url'] = '?board={}'.format(self.board)
         return context
 
 

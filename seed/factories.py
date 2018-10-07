@@ -2,6 +2,7 @@ import factory
 import pytz
 import os
 import sys
+from random import randrange
 from datetime import timedelta
 from faker import Factory
 from django.contrib.auth.models import User, Permission
@@ -97,3 +98,9 @@ class DateFactory():
 
     def yesterday():
         return timezone.now() - timedelta(days=1)
+
+    def month():
+        return randrange(1, 13)
+    
+    def day_of_month():
+        return randrange(1, 33)

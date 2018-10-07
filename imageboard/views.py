@@ -1,3 +1,4 @@
+import urllib
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Prefetch, Q
 from .models import Board, Thread, UserPost
@@ -167,10 +168,11 @@ class ThreadCatalog(ListView):
         return super(ThreadCatalog, self).dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-         return redirect('{}?search={}'.format(self.desired_board.get_catalog_url(), request.POST.get('search_term', ''))) #Very messy solution
+         return redirect('{}?search={}'.format(self.desired_board.get_catalog_url(), urllib.parse.quote(request.POST.get('search_term', ''), safe=''))) #Very messy solution
  
     def get_queryset(self):
         if self.search_term:
+            self.search_term = urllib.parse.unquote(self.search_term)
             return self.desired_board.threads.filter(Q(subject__icontains=self.search_term) | Q(post__icontains=self.search_term)).prefetch_related('posts')
         else:
             return self.desired_board.threads.prefetch_related('posts')
@@ -178,4 +180,4 @@ class ThreadCatalog(ListView):
     def get_context_data(self, **kwargs):
        context = super().get_context_data(**kwargs)
        context['board'] = self.desired_board
-       return context        
+       return context 

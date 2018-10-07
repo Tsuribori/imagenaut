@@ -193,7 +193,7 @@ class ThreadReportTestCase(TestCase):
     def test_context(self):
         self.assertTrue(self.resp_get_all.context['moderation_view'])
         self.assertTrue('thread_list' in self.resp_get_all.context)
-        self.assertEqual(self.resp_get_board.context['moderation_board_url'], '?board={}'.format(self.board.slug))
+        
 
     def test_all_reports_shown(self): 
         for thread in self.threads:
@@ -254,7 +254,7 @@ class UserPostReportTestCase(TestCase):
 
     def test_context(self): 
         self.assertTrue('post_list' in self.resp_get_all.context)
-        self.assertEqual(self.resp_get_board.context['moderation_board_url'], '?board={}'.format(self.board.slug))
+        
 
     def test_all_reports_shown(self): 
         for post in self.posts:
