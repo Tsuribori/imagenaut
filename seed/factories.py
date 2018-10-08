@@ -27,7 +27,7 @@ class ThreadFactory(factory.DjangoModelFactory):
         model = Thread
         exclude = ('files',)
 
-    subject = faker.word()
+    subject = factory.LazyAttribute(lambda _: faker.name())
     name = faker.name()
     post = factory.LazyAttribute(lambda _: faker.text())
     board = factory.SubFactory(BoardFactory)

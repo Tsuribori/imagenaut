@@ -1,5 +1,6 @@
 {% extends parent_template|default:"archives/base_archives.html" %}
 {% load imageboard_objects %}
+{% load url_replace %}
 
 {% block arc_content %}
   
@@ -25,7 +26,7 @@
   {% if is_paginated %}
     <div class="pagination no-flex">
       {% for page_number in page_obj.paginator.page_range %}
-        <a href="{{ page_url }}{{ page_number }}">
+        <a href="?{% url_replace page=page_number %}">
           {{ page_number }}
         </a>
       {% endfor %}

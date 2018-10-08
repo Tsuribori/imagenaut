@@ -173,7 +173,8 @@ class ThreadCatalog(ListView):
     def get_queryset(self):
         if self.search_term:
             self.search_term = urllib.parse.unquote(self.search_term)
-            return self.desired_board.threads.filter(Q(subject__icontains=self.search_term) | Q(post__icontains=self.search_term)).prefetch_related('posts')
+            return self.desired_board.threads.filter(
+                Q(subject__icontains=self.search_term) | Q(post__icontains=self.search_term), archived=False).prefetch_related('posts')
         else:
             return self.desired_board.threads.prefetch_related('posts')
 

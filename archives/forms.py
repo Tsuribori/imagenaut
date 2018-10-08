@@ -1,3 +1,4 @@
+import urllib
 from django import forms
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -15,6 +16,7 @@ class ArchiveSearchForm(forms.Form):
     year = forms.ChoiceField(required=False, choices=[])
     month = forms.ChoiceField(required=False, choices=month_choices)
     day = forms.ChoiceField(required=False, choices=day_choices)
+    search = forms.CharField(required=False)
 
     #Setting the year choices must be inside the __init__ method in order for the choices to be updated
     def __init__(self, *args, **kwargs):
@@ -29,6 +31,9 @@ class ArchiveSearchForm(forms.Form):
         self.fields['year'].choices = year_choices
   
 
+    def clean_search(self):
+        search_term = self.cleaned_data['search']
+        return urllib.parse.quote(search_term, safe='')
       
     def clean(self):
         data = self.cleaned_data

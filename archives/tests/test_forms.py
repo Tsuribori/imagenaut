@@ -1,7 +1,7 @@
 from django.test import TestCase, tag
 from django.utils import timezone
 from archives.forms import ArchiveSearchForm
-from seed.factories import BoardFactory, DateFactory
+from seed.factories import faker, BoardFactory, DateFactory
 
 @tag('form')
 class ArchiveFormTest(TestCase):
@@ -11,7 +11,7 @@ class ArchiveFormTest(TestCase):
         self.board = BoardFactory().name
    
     def test_valid_form(self): 
-        form_data = {'board': self.board, 'year': self.current_year, 'month': DateFactory.month(), 'day': DateFactory.day_of_month()}
+        form_data = {'board': self.board, 'year': self.current_year, 'month': DateFactory.month(), 'day': DateFactory.day_of_month(), 'search': faker.word()}
         form = ArchiveSearchForm(form_data)
         self.assertTrue(form.is_valid())
 

@@ -270,6 +270,7 @@ class ThreadCatalogTestCase(TestCase):
         self.threads = ThreadFactory.create_batch(5, board=self.board)
         self.thread1 = ThreadFactory(subject='test', board=self.board)
         self.thread2 = ThreadFactory(post='test', board=self.board)
+        self.archived_thread = ThreadFactory(board=self.board, archived=True)
         self.resp_all_threads = self.client.get(self.board.get_catalog_url())
         self.resp_specific = self.client.get('{}?search={}'.format(self.board.get_catalog_url(), 'test'))
         self.resp_post_search = self.client.post(self.board.get_catalog_url(), {'search_term' : 'Test'})
@@ -289,6 +290,8 @@ class ThreadCatalogTestCase(TestCase):
         for thread in self.threads:
             self.assertContains(self.resp_all_threads, thread.subject)
         
+    def test_archived_not_displayed(self):
+        self.assertNotContains(self.resp_all_threads, self.archived_thread.post)
 
     def test_subject_search(self):
         self.assertContains(self.resp_specific, self.thread1.subject)
@@ -303,6 +306,10 @@ class ThreadCatalogTestCase(TestCase):
     def test_nothing_found(self):
         resp = self.client.get('{}?search={}'.format(self.board.get_catalog_url(), 'ÄÖÅ')) #Test with a word the factory can't produce
         self.assertContains(resp, 'Nothing found.')
+
+    def test_archived_not_searched(self):
+        resp = self.client.get('{}?search={}'.format(self.board.get_catalog_url(), self.archived_thread.subject))
+        self.assertNotContains(resp, self.archived_thread.subject)
 
     def test_back_link(self):
         self.assertContains(self.resp_all_threads, self.board.get_absolute_url())
