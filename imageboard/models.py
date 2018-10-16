@@ -29,7 +29,7 @@ class Board(models.Model):
     def get_reported_posts_url(self):
         return '{}?board={}'.format(reverse('dj-mod:moderation_userpost_report_list'), self.slug)
     def get_archive_url(self):
-        return reverse('archive_thread_list', kwargs={'board': self.slug})
+        return reverse('archive_thread_list', kwargs={'board': self.slug}) 
     def __str__(self):
         return self.name
 
@@ -41,10 +41,10 @@ class Thread(models.Model, DateMixin):
         else:
             return max_number + 1
 
-    thread_number = models.PositiveIntegerField(unique=True, default=get_thread_number)
+    thread_number = models.PositiveIntegerField(unique=True, default=get_thread_number, editable=False)
     subject = models.CharField(max_length=50, blank=True)
     name = models.CharField(max_length=20, default='Anonymous')
-    time_made = models.DateTimeField(default=timezone.now)
+    time_made = models.DateTimeField(default=timezone.now, editable=False)
     post = models.CharField(max_length=5000, blank=False)
     bumb_order = models.DateTimeField(auto_now_add=True)
     board = models.ForeignKey(Board, on_delete=models.CASCADE, related_name='threads')

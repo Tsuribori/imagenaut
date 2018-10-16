@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'sorl.thumbnail',
     'embed_video',
     'imageboard',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'navigation',
     'archives',
     'core',
+    'api',
 ]
 
 MIDDLEWARE = [

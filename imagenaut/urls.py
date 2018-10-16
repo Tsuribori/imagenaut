@@ -25,6 +25,7 @@ from rules import urls as rules_urls
 from navigation import urls as navigation_urls
 from navigation.views import Frontpage #Messy solution
 from archives import urls as archives_urls
+from api import urls as api_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +34,7 @@ urlpatterns = [
     path('mod/', include((moderation_urls, 'mod'), namespace='dj-mod')),
     path('rules/', include(rules_urls)),
     path('archive/', include(archives_urls)),
+    path('api/v1/', include(api_urls)),
     path('', Frontpage.as_view(), name='navigation_frontpage'),
 ]
 

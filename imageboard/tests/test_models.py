@@ -94,6 +94,9 @@ class ModelTestCase(TestCase):
         self.assertEqual(self.thread1.get_archive_day_url(), '/archive/{}/{}/{}/{}/'.format(
             self.board1.slug, self.thread1.time_made.year, self.thread1.time_made.month, self.thread1.time_made.day))
 
+   
+
+
 class SageTestCase(TestCase):
 
     def setUp(self):
