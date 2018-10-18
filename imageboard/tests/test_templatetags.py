@@ -30,7 +30,6 @@ class ThreadFormat(TestCase):
         self.assertIn(self.thread.post, self.rendered)
 
 
-
 class ThreadIDFormat(TestCase): 
 
     def setUp(self):

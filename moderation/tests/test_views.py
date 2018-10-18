@@ -103,7 +103,7 @@ class BanViewTestCase(TestCase):
             {'post': 'Im not trying to break the rules!', 'name': 'Anon', 'image': ImageFactory()})
         self.assertRedirects(resp, expected_url=reverse('imageboard_thread_page', kwargs={'board': self.board.slug, 'thread_number': 1}))
         resp2 = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board.slug, 'thread_number': self.thread.thread_number}), 
-            {'post': 'Im not trying to break the rules!', 'name': 'Anon'})
+            {'post': 'Im not trying to break the rules!', 'name': 'Anon', 'captcha_0': 'dummy', 'captcha_1': 'PASSED'})
         self.assertRedirects(resp2, expected_url=self.thread.get_absolute_url())
         
 
@@ -142,7 +142,7 @@ class BanProperRedirectTestCase(TestCase): #Test that there is no redirect when 
     def test_no_post_redirect(self):
         sleep(0.1)
         resp = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}),
-            {'post': 'Im not breaking the rules!', 'name': 'Anon'})
+            {'post': 'Im not breaking the rules!', 'name': 'Anon', 'captcha_0': 'dummy', 'captcha_1': 'PASSED'})
         self.assertRedirects(resp, expected_url=self.thread1.get_absolute_url(), status_code=302)
 
 

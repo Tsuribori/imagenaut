@@ -35,6 +35,7 @@ urlpatterns = [
     path('rules/', include(rules_urls)),
     path('archive/', include(archives_urls)),
     path('api/v1/', include(api_urls)),
+    path('captcha/', include('captcha.urls')),
     path('', Frontpage.as_view(), name='navigation_frontpage'),
 ]
 

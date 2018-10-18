@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from sorl.thumbnail.fields import ImageFormField 
+#from sorl.thumbnail.fields import ImageFormField 
+from captcha.fields import CaptchaField
 from .models import Thread, UserPost
 from .utils import GetIPMixin, CooldownMixin, MakeTripcode
     
@@ -31,8 +32,7 @@ class UserPostForm(forms.ModelForm, GetIPMixin, CooldownMixin, MakeTripcode):
         self.request = kwargs.pop('request', None)
         super(UserPostForm, self).__init__(*args, **kwargs)
 
-    ModelInstance = Thread
-    
+    captcha = CaptchaField()    
     class Meta:
         model = UserPost
         fields = ['name', 'sage', 'post', 'image', 'embed']

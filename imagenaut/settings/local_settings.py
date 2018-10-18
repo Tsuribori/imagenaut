@@ -13,3 +13,4 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
+CAPTCHA_TEST_MODE = True

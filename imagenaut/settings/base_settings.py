@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
     'rest_framework',
     'sorl.thumbnail',
     'embed_video',
@@ -152,6 +153,9 @@ CACHES = {
 #Thumbnail settings
 THUMBNAIL_PRESERVE_FORMAT = True #Must be used or transparent images won't work
 
+#Catpcha settings
+CAPTCHA_FONT_SIZE = 70
+CAPTCHA_IMAGE_SIZE = (500, 70)
 #Login URLs
 
 from django.urls import reverse_lazy

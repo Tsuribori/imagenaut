@@ -108,7 +108,7 @@ class CreateViewTestCase(TestCase):
        sleep(0.15)
        post_made = 'Let me give you a quick rundown'
        resp = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board1.slug, 'thread_number': self.thread1.thread_number}), 
-           {'post': post_made, 'name': 'Bogpilled'})
+           {'post': post_made, 'name': 'Bogpilled', 'captcha_0': 'dummy', 'captcha_1': 'PASSED'})
        self.assertEqual(resp.status_code, 302)
        new_post = UserPost.objects.get(post=post_made)
        self.assertEqual(new_post.name, 'Bogpilled')

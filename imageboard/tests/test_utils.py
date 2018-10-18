@@ -72,7 +72,7 @@ class MakeTripcodeTestCase(TestCase): #Test tripcode processing
 
     def setUp(self):
         name = 'Name #test'
-        form_data = {'name': name, 'post': faker.text()}
+        form_data = {'name': name, 'post': faker.text(), 'captcha_0': 'dummy', 'captcha_1': 'PASSED'}
         signer = Signer()
         tripcode = '!{}'.format(signer.sign('#test')[-10:]) #Process the expected tripcode
         self.processed_name = name.replace('#test', tripcode)
@@ -81,7 +81,7 @@ class MakeTripcodeTestCase(TestCase): #Test tripcode processing
             self.trip_name = form.instance.name #Get the name processed by MakeTripcode class
         #Below set up a test for a name without a trip to check that there are no unintended processing or errors
         self.name_without_trip = 'Name'
-        form_data2 = {'name': self.name_without_trip, 'post': faker.text()}
+        form_data2 = {'name': self.name_without_trip, 'post': faker.text(), 'captcha_0': 'dummy', 'captcha_1': 'PASSED'}
         form2 = UserPostForm(data=form_data2)
         if form2.is_valid():
             self.no_trip = form2.instance.name 

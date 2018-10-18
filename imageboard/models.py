@@ -16,7 +16,7 @@ class DateMixin(): #Format the date in templates for thread and post
 
 class Board(models.Model):
     name = models.CharField(max_length=31, unique=True)
-    description = models.CharField(max_length=300, null=True)
+    description = models.CharField(max_length=300)
     slug = models.SlugField(max_length=31, unique=True)
     def get_absolute_url(self):
         return reverse('imageboard_thread_list', kwargs={'board': self.slug})

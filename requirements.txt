@@ -4,6 +4,7 @@ Django==2.0.6
 django-debug-toolbar==1.9.1
 django-embed-video==1.1.2
 djangorestframework==3.8.2
+django-simple-captcha==0.5.9
 factory-boy==2.11.1
 Faker==0.8.17
 idna==2.7
@@ -19,3 +20,4 @@ sorl-thumbnail==12.4.1
 sqlparse==0.2.4
 text-unidecode==1.2
 urllib3==1.23
+

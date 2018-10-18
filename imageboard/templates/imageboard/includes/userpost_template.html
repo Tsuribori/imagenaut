@@ -25,6 +25,7 @@
     <a href="{{ post.get_delete_url }}">
       Delete</a>
   {% endif %}
+
   {% if post.image %}
     <div class="grid-flex">
       {% thumbnail post.image "200x200" as img %}
