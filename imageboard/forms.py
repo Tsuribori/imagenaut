@@ -10,7 +10,8 @@ class ThreadForm(forms.ModelForm, GetIPMixin, CooldownMixin, MakeTripcode):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(ThreadForm, self).__init__(*args, **kwargs)
-
+    
+    captcha = CaptchaField()
     class Meta:
         model = Thread
         fields = ['subject', 'name', 'post', 'image', 'embed', 'id_enabled']

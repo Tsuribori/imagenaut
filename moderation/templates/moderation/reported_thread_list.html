@@ -1,0 +1,27 @@
+{% extends parent_template|default:"imageboard/base_imageboard.html" %}
+{% load imageboard_objects %}
+{% load url_replace %}
+
+{% block title %}
+  Reported Threads
+{% endblock %}
+
+{% block img_content %}
+  {% for thread in thread_list %}
+    {% thread_format thread %} 
+  {% empty %}
+    <p>No reported threads.</p>
+  {% endfor %}
+
+  {% if is_paginated %}
+    <div class="pagination no-flex">
+      {% for page_number in page_obj.paginator.page_range %}
+          <a href="?{% url_replace page=page_number %}">
+            {{ page_number }}</a>
+      {% endfor %}
+    </div>
+
+  {% endif %}
+
+  
+{% endblock %} 

@@ -98,7 +98,7 @@ class CreateViewTestCase(TestCase):
        sleep(0.15) #Sleep so cooldown is reset and posting works
        post_made = 'This is a form test'
        resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), 
-           {'post': post_made, 'name': 'Iodine', 'image': ImageFactory()})
+           {'post': post_made, 'name': 'Iodine', 'image': ImageFactory(), 'captcha_0': 'dummy', 'captcha_1': 'PASSED'})
        self.assertEqual(resp.status_code, 302)
        new_thread = Thread.objects.get(post=post_made)
        self.assertEqual(new_thread.name, 'Iodine')

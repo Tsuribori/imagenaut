@@ -60,7 +60,7 @@ class TransgressionList(ListView, GetIPMixin): #Ban page that shows user bans
 class ReportedThreadList(PermissionRequiredMixin, ListView):
     model = Thread
     context_object_name = 'thread_list'
-    template_name = 'imageboard/board.html'
+    template_name = 'moderation/reported_thread_list.html'
     paginate_by = 150
     permission_required = 'imageboard.delete_thread'
     raise_exception = True

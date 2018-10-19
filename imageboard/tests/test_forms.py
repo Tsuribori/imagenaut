@@ -6,7 +6,7 @@ from seed.factories import ImageFactory
 class FormsTestCase(TestCase): 
  
     def test_thread_form_validity(self):
-        form_data = {'post': 'Test123', 'name': 'Johnny', 'subject': 'This is a test', 'embed': 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'}
+        form_data = {'post': 'Test123', 'name': 'Johnny', 'subject': 'This is a test', 'embed': 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'captcha_0': 'dymmy', 'captcha_1': 'PASSED'}
         form = ThreadForm(form_data, {'image': ImageFactory()})
         self.assertTrue(form.is_valid())
         
@@ -22,7 +22,7 @@ class FormsTestCase(TestCase):
         form = ThreadForm(data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors, 
-            {'post': ['This field is required.'], 'name': ['This field is required.'], 'image': ['This field is required.']})
+            {'post': ['This field is required.'], 'name': ['This field is required.'], 'image': ['This field is required.'], 'captcha': ['This field is required.']})
 
     def test_userpost_blank_data(self):
         form = UserPostForm(data={})

@@ -100,7 +100,7 @@ class BanViewTestCase(TestCase):
         board2 = BoardFactory()
         ban = TransgressionFactory(banned_from=board2, ip_address=self.ip_addr)
         resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board.slug}), 
-            {'post': 'Im not trying to break the rules!', 'name': 'Anon', 'image': ImageFactory()})
+            {'post': 'Im not trying to break the rules!', 'name': 'Anon', 'image': ImageFactory(), 'captcha_0': 'dummy', 'captcha_1': 'PASSED'})
         self.assertRedirects(resp, expected_url=reverse('imageboard_thread_page', kwargs={'board': self.board.slug, 'thread_number': 1}))
         resp2 = self.client.post(reverse('imageboard_userpost_create', kwargs={'board': self.board.slug, 'thread_number': self.thread.thread_number}), 
             {'post': 'Im not trying to break the rules!', 'name': 'Anon', 'captcha_0': 'dummy', 'captcha_1': 'PASSED'})
@@ -136,7 +136,7 @@ class BanProperRedirectTestCase(TestCase): #Test that there is no redirect when 
     def test_no_thread_redirect(self):
         sleep(0.1)
         resp = self.client.post(reverse('imageboard_thread_create', kwargs={'board': self.board1.slug}), 
-            {'post': 'Im not breaking the rules!', 'name': 'Anon', 'image': ImageFactory()})
+            {'post': 'Im not breaking the rules!', 'name': 'Anon', 'image': ImageFactory(), 'captcha_0': 'dummy', 'captcha_1': 'PASSED'})
         self.assertRedirects(resp, expected_url=reverse('imageboard_thread_page', kwargs={'board': self.board1.slug, 'thread_number': 1}), status_code=302)
 
     def test_no_post_redirect(self):
@@ -188,7 +188,7 @@ class ThreadReportTestCase(TestCase):
        self.assertEqual(self.resp_get_board.status_code, 200)
        
     def test_template(self):
-        self.assertTemplateUsed(self.resp_get_all, 'imageboard/board.html')
+        self.assertTemplateUsed(self.resp_get_all, 'moderation/reported_thread_list.html')
 
     def test_context(self):
         self.assertTrue(self.resp_get_all.context['moderation_view'])
