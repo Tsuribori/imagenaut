@@ -1,7 +1,7 @@
-from imageboard.models import Board, Thread
+from imageboard.models import Board, Thread, UserPost
 from rest_framework import viewsets
 from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
-from api.serializers import BoardSerializer, ThreadSerializer
+from api.serializers import BoardSerializer, ThreadSerializer, UserPostSerializer
 from api.utils import PostPermission
 
 class BoardViewListSet(viewsets.ModelViewSet):
@@ -16,5 +16,11 @@ class ThreadViewListSet(viewsets.ModelViewSet):
     queryset = Thread.objects.all()
     serializer_class = ThreadSerializer
     lookup_field = 'thread_number'
+
+class UserPostViewListSet(viewsets.ModelViewSet):
+    permission_classes = (PostPermission,)
+    queryset = UserPost.objects.all()
+    serializer_class = UserPostSerializer
+    lookup_field = 'post_number'
 
 

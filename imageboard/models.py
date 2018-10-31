@@ -56,7 +56,7 @@ class Thread(models.Model, DateMixin):
     pinned = models.BooleanField(default=False)
     embed = EmbedVideoField(blank=True, null=True, help_text='Youtube, Vimeo or Soundcloud URL')
     id_enabled = models.BooleanField(default=False, verbose_name='Enable poster IDs')
-    poster_id = models.CharField(max_length=30, null=True, blank=True)
+    poster_id = models.CharField(max_length=30, null=True, blank=True, editable=False)
 
     def __str__(self):
         return "{} {}".format(str(self.thread_number), self.subject)
@@ -113,9 +113,9 @@ class UserPost(models.Model, DateMixin):
             return 0
         else:
             return max_number + 1
-    post_number = models.PositiveIntegerField(unique=True, default=get_post_number)
+    post_number = models.PositiveIntegerField(unique=True, default=get_post_number, editable=False)
     name = models.CharField(max_length=20, default='Anonymous')
-    time_made = models.DateTimeField(auto_now=True)
+    time_made = models.DateTimeField(auto_now=True, editable=False)
     post = models.CharField(max_length=5000, blank=False)
     thread = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='posts')
     ip_address = models.GenericIPAddressField()
@@ -123,7 +123,7 @@ class UserPost(models.Model, DateMixin):
     reported = models.BooleanField(default=False)
     image = ImageField(upload_to='images/', blank=True, null=True)
     embed = EmbedVideoField(blank=True, null=True, help_text='Youtube, Vimeo or Soundcloud URL')
-    poster_id = models.CharField(max_length=30, null=True)
+    poster_id = models.CharField(max_length=30, null=True, editable=False)
 
     def __str__(self):
         return str(self.post_number)
