@@ -29,6 +29,10 @@
             <a href="{% url 'rules_rule_list' %}">
               Rules</a>
           </li>
+          <li>
+            <a href="{% url 'archive_search_form' %}">
+              Archives</a>
+          </li>
           {% if perms.moderation.add_transgression %}
             <li>
               <a href="{% url 'dj-mod:moderation_thread_report_list' %}">

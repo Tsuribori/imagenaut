@@ -36,7 +36,7 @@ class BanMixin():
                 for ban in bans:
                     if ban.banned_until < timezone.now():  #Delete bans that have expired
                         ban.delete()
-                    elif ban.global_ban == True or ban.banned_from == board: #
+                    elif ban.global_ban == True or ban.banned_from == board: 
                         ban_list.append(ban.banned_until)
                 return len(ban_list) > 0
         

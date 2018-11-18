@@ -2,6 +2,7 @@ from .base_settings import *
 
 DEBUG = True
 THUMBNAIL_DEBUG = True
+REST_VALIDATOR_SINGLE_USE = False
 
 INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar',]
     

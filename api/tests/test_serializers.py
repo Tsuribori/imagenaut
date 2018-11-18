@@ -120,7 +120,11 @@ class ThreadSerializerTest(APITestCase):
     def test_list_page_posts_not_shown(self): #Test that 'posts' field not included if the view is 'api_thread-list'
         resp = self.client.get(reverse('api_thread-list')).wsgi_request
         data = ThreadSerializer(instance=self.thread, context={'request': resp}).data
-        self.assertFalse(data.get('posts', False)) 
+        self.assertFalse(data.get('posts', False))
+
+
+    def test_captcha_key(self): #Test that captcha_key is write-only
+        self.assertFalse(self.data.get('captcha_key', False)) 
 
    
 @tag('api')
@@ -168,3 +172,6 @@ class UserPostSerializerTest(APITestCase):
 
     def test_reported(self):
         self.assertFalse(self.data.get('reported', False))
+
+    def test_captcha_key(self):
+        self.assertFalse(self.data.get('captcha_key', False))

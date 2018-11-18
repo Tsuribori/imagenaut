@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'captcha',
     'rest_framework',
+    'rest_validator',
     'sorl.thumbnail',
     'embed_video',
     'imageboard',

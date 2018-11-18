@@ -21,4 +21,4 @@ sorl-thumbnail==12.4.1
 sqlparse==0.2.4
 text-unidecode==1.2
 urllib3==1.23
-
+-e git+https://github.com/Tsuribori/django_rest_captcha_validator.git#egg=rest_validator
