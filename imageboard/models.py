@@ -1,3 +1,4 @@
+import re
 from django.db import models
 from django.urls import reverse
 from datetime import datetime
@@ -9,9 +10,18 @@ from embed_video.fields import EmbedVideoField
 
 # Create your models here.
 
-class DateMixin(): #Format the date in templates for thread and post
-    def get_date(self):
+class UtilityMixin(): 
+    
+    def get_date(self): #Format the date in templates for thread and post
         return self.time_made.strftime("%a %H:%M, %d %b %Y")
+    def create_tripcode(self, string):
+        match = re.search('#[\d\w\s]+', string)
+        if match: 
+            password = match.group(0)
+            signer = Signer()
+            tripcode = '!{}'.format(signer.sign(password)[-10:])
+            string = string.replace(password, tripcode)
+        return string
 
 
 class Board(models.Model):
@@ -33,7 +43,7 @@ class Board(models.Model):
     def __str__(self):
         return self.name
 
-class Thread(models.Model, DateMixin):
+class Thread(models.Model, UtilityMixin):
     def get_thread_number():
         max_number = Thread.objects.all().aggregate(models.Max('thread_number'))['thread_number__max']
         if max_number == None:
@@ -88,8 +98,8 @@ class Thread(models.Model, DateMixin):
         signer = Signer()
         unique_id = signer.sign(value)[-10:] #Get the last ten chars of the hash
         return unique_id
-
- 
+   
+   
     def save(self, *args, **kwargs):
         active_threads = Thread.objects.filter(board=self.board, archived=False).count()
         if active_threads >= 100 and self.archived==False: #Prevent recursion by checking self.archived==False 
@@ -98,6 +108,7 @@ class Thread(models.Model, DateMixin):
             last_thread.save()
         if self.id_enabled:
             self.poster_id = self.generate_poster_id()
+        self.name = self.create_tripcode(self.name)
         super(Thread, self).save(*args, **kwargs)
 
     class Meta:
@@ -106,7 +117,7 @@ class Thread(models.Model, DateMixin):
             models.Index(fields=['thread_number']),
         ]
 
-class UserPost(models.Model, DateMixin):
+class UserPost(models.Model, UtilityMixin):
     def get_post_number():
         max_number = UserPost.objects.all().aggregate(models.Max('post_number'))['post_number__max']
         if max_number == None:
@@ -159,6 +170,7 @@ class UserPost(models.Model, DateMixin):
         if self.thread.id_enabled: 
             self.poster_id = self.generate_poster_id()
         self.thread.save()
+        self.name = self.create_tripcode(self.name)
         super(UserPost, self).save(*args, **kwargs)
 
     class Meta:

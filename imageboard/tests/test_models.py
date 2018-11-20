@@ -1,7 +1,7 @@
 from django.test import TestCase, tag
 from django.core.signing import Signer
 from imageboard.models import Board, Thread, UserPost
-from seed.factories import BoardFactory, ThreadFactory, UserPostFactory
+from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory
 # Create your tests here.
 
 
@@ -211,3 +211,24 @@ class PosterID(TestCase):
 
     def test_post_hashes_match(self):
         self.assertEqual(self.post.poster_id, self.unique_post_id)
+
+
+class MakeTripcodeTestCase(TestCase): #Test tripcode processing
+
+    def setUp(self):
+        name = 'Name #test' 
+        post = UserPostFactory(name=name)
+        signer = Signer()
+        tripcode = '!{}'.format(signer.sign('#test')[-10:]) #Process the expected tripcode
+        self.processed_name = name.replace('#test', tripcode)
+        self.trip_name = post.name
+        #Below set up a test for a name without a trip to check that there are no unintended processing or errors
+        self.name_without_trip = 'Name'
+        post2 = UserPostFactory(name=self.name_without_trip)
+        self.no_trip = post2.name
+
+    def test_names_equal(self): #Test that the outcome is what is expected
+        self.assertEqual(self.trip_name, self.processed_name)
+
+    def test_trip_not_processed(self):
+        self.assertEqual(self.name_without_trip, self.no_trip)
