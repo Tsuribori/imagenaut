@@ -4,7 +4,7 @@ from imageboard.models import Board, Thread, UserPost
 from seed.factories import BoardFactory, ThreadFactory, UserPostFactory
 # Create your tests here.
 
-@tag('current')
+
 class ModelTestCase(TestCase):
    
     def setUp(self):
@@ -94,6 +94,18 @@ class ModelTestCase(TestCase):
         self.assertEqual(self.thread1.get_archive_day_url(), '/archive/{}/{}/{}/{}/'.format(
             self.board1.slug, self.thread1.time_made.year, self.thread1.time_made.month, self.thread1.time_made.day))
 
+    
+    def test_thread_number_editable(self):
+        field = Thread._meta.get_field('thread_number')
+        self.assertFalse(field.editable)
+
+    def test_thread_thread_time_made_editable(self):
+        field = Thread._meta.get_field('time_made')
+        self.assertFalse(field.editable)
+
+    def test_thread_poster_id_editable(self):
+        field = Thread._meta.get_field('poster_id')
+        self.assertFalse(field.editable)
    
 
 

@@ -1,8 +1,11 @@
 from rest_framework.test import APITestCase
+from captcha.models import CaptchaStore
+from django.conf import settings
 from django.test import tag
+from django.utils import timezone
 from rest_framework.reverse import reverse
 from api.serializers import BoardSerializer, ThreadSerializer, UserPostSerializer
-from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory
+from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory, ImageFactory, TransgressionFactory
 
 @tag('api')
 class BoardViewListSet(APITestCase):
@@ -129,4 +132,92 @@ class UserPostViewListSet(APITestCase):
     def test_put_permission(self):
         resp = self.client.put(self.url)
         self.assertEqual(resp.status_code, 403)
+
+@tag('api')
+class ThreadViewListSetPOST(APITestCase):
+
+    def setUp(self):
+        self.board = BoardFactory()
+        self.ip_address = '127.0.0.1'
+        self.url = reverse('api_thread-list')
+        get_captcha_resp = self.client.get(reverse('rest_validator_view'))
+        self.key = get_captcha_resp.data['captcha_key']
+        self.captcha_value = CaptchaStore.objects.get(hashkey=self.key).challenge
+        validate_resp = self.client.post(reverse('rest_validator_view'), {'captcha_key': self.key, 'captcha_value': self.captcha_value})
+        self.data = {
+            'subject': faker.name(),
+            'name': faker.name(),
+            'post': faker.text(),
+            'image': ImageFactory(),
+            'board': reverse('api_board-detail', kwargs={'slug': self.board.slug}),
+            'captcha_key': self.key,
+        }
+
+   
+    def test_valid_post(self):
+        resp = self.client.post(self.url, self.data)
+        self.assertEqual(resp.status_code, 201)  
+
+    def test_invalid_captcha(self):
+        self.data['captcha_key'] = faker.word()
+        resp = self.client.post(self.url, self.data)
+        self.assertEqual(resp.status_code, 400)
+
+    def test_global_banned_user(self):
+       TransgressionFactory(ip_address=self.ip_address, global_ban=True)
+       resp = self.client.post(self.url, self.data)
+       self.assertEqual(resp.status_code, 400) 
+
+    def test_board_banned_user(self):
+        TransgressionFactory(ip_address=self.ip_address, banned_from=self.board)
+        resp = self.client.post(self.url, self.data)
+        self.assertEqual(resp.status_code, 400)
+
+    def test_user_on_cooldown(self):
+       ThreadFactory(ip_address=self.ip_address)
+       resp = self.client.post(self.url, self.data)
+       self.assertEqual(resp.status_code, 400)
+
+@tag('api')
+class UserPostViewListSetPOST(APITestCase):
+
+    def setUp(self):
+        self.thread = ThreadFactory()
+        self.ip_address = '127.0.0.1'
+        self.url = reverse('api_post-list')
+        get_captcha_resp = self.client.get(reverse('rest_validator_view'))
+        self.key = get_captcha_resp.data['captcha_key']
+        self.captcha_value = CaptchaStore.objects.get(hashkey=self.key).challenge
+        validate_resp = self.client.post(reverse('rest_validator_view'), {'captcha_key': self.key, 'captcha_value': self.captcha_value})
+        self.data = {
+            'name': faker.name(),
+            'post': faker.text(),
+            'thread': reverse('api_thread-detail', kwargs={'thread_number': self.thread.thread_number}),
+            'captcha_key': self.key,
+        }
+
+   
+    def test_valid_post(self):
+        resp = self.client.post(self.url, self.data)
+        self.assertEqual(resp.status_code, 201)  
+
+    def test_invalid_captcha(self):
+        self.data['captcha_key'] = faker.word()
+        resp = self.client.post(self.url, self.data)
+        self.assertEqual(resp.status_code, 400)
+
+    def test_global_banned_user(self):
+       TransgressionFactory(ip_address=self.ip_address, global_ban=True)
+       resp = self.client.post(self.url, self.data)
+       self.assertEqual(resp.status_code, 400) 
+
+    def test_board_banned_user(self):
+        TransgressionFactory(ip_address=self.ip_address, banned_from=self.thread.board)
+        resp = self.client.post(self.url, self.data)
+        self.assertEqual(resp.status_code, 400)
+
+    def test_user_on_cooldown(self):
+       UserPostFactory(ip_address=self.ip_address)
+       resp = self.client.post(self.url, self.data)
+       self.assertEqual(resp.status_code, 400)
 

@@ -124,7 +124,11 @@ class ThreadSerializerTest(APITestCase):
 
 
     def test_captcha_key(self): #Test that captcha_key is write-only
-        self.assertFalse(self.data.get('captcha_key', False)) 
+        self.assertFalse(self.data.get('captcha_key', False))
+
+    def test_read_only_fields(self): #Test that certain fields are read-only
+        read_only = ThreadSerializer.Meta.read_only_fields
+        self.assertEqual(read_only, ('archived', 'pinned', 'bumb_limit_reached',))
 
    
 @tag('api')
