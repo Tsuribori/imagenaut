@@ -53,7 +53,7 @@ class ArchiveSearch(FormView):
          year = form.cleaned_data['year']
          month = form.cleaned_data['month']
          day = form.cleaned_data['day']
-         search = form.cleaned_data['search']
+         search = form.cleaned_data['search_term']
          board = get_object_or_404(Board, name=form.cleaned_data['board'])
          if search:
              extra_url = '?search={}'.format(search)

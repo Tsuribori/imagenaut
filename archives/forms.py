@@ -16,7 +16,7 @@ class ArchiveSearchForm(forms.Form):
     year = forms.ChoiceField(required=False, choices=[])
     month = forms.ChoiceField(required=False, choices=month_choices)
     day = forms.ChoiceField(required=False, choices=day_choices)
-    search = forms.CharField(required=False)
+    search_term = forms.CharField(required=False)
 
     #Setting the year choices must be inside the __init__ method in order for the choices to be updated
     def __init__(self, *args, **kwargs):
@@ -31,9 +31,9 @@ class ArchiveSearchForm(forms.Form):
         self.fields['year'].choices = year_choices
   
 
-    def clean_search(self):
-        search_term = self.cleaned_data['search']
-        return urllib.parse.quote(search_term, safe='')
+    def clean_search_term(self):
+        search_term = urllib.parse.quote(self.cleaned_data['search_term'])
+        return search_term
       
     def clean(self):
         data = self.cleaned_data
@@ -44,5 +44,6 @@ class ArchiveSearchForm(forms.Form):
             raise ValidationError('Month must be provided.')
         if month and not year:
             raise ValidationError('Year must be provided')
+        return data
 
     

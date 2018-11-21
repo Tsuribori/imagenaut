@@ -28,10 +28,10 @@ class ArchiveSearchTerm(TestCase):
         self.board = BoardFactory()
         self.thread = ThreadFactory(archived=True, board=self.board)
         self.thread2 = ThreadFactory(archived=False, board=self.board)
-        self.subject_resp = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search': self.thread.subject}, follow=True)
-        self.subject_resp2 = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search': self.thread2.subject}, follow=True)
-        self.post_resp = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search': self.thread.post}, follow=True)
-        self.post_resp2 = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search': self.thread2.post}, follow=True)
+        self.subject_resp = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search_term': self.thread.subject}, follow=True)
+        self.subject_resp2 = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search_term': self.thread2.subject}, follow=True)
+        self.post_resp = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search_term': self.thread.post}, follow=True)
+        self.post_resp2 = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search_term': self.thread2.post}, follow=True)
 
     def test_search_by_subject(self):
         self.assertContains(self.subject_resp, self.thread.subject)
@@ -54,13 +54,13 @@ class ArchiveSearchTermDate(TestCase):
         self.thread = ThreadFactory(archived=True, board=self.board)
         self.thread2 = ThreadFactory(archived=False, board=self.board)
         self.subject_resp = self.client.post(reverse('archive_search_form'), {
-            'board': self.board, 'year': self.thread.time_made.year, 'search': self.thread.subject}, follow=True)
+            'board': self.board, 'year': self.thread.time_made.year, 'search_term': self.thread.subject}, follow=True)
         self.subject_resp2 = self.client.post(reverse('archive_search_form'), {
-            'board': self.board, 'year': self.thread.time_made.year, 'search': self.thread2.subject}, follow=True)
+            'board': self.board, 'year': self.thread.time_made.year, 'search_term': self.thread2.subject}, follow=True)
         self.post_resp = self.client.post(reverse('archive_search_form'), {
-            'board': self.board, 'year': self.thread2.time_made.year, 'search': self.thread.post}, follow=True)
+            'board': self.board, 'year': self.thread2.time_made.year, 'search_term': self.thread.post}, follow=True)
         self.post_resp2 = self.client.post(reverse('archive_search_form'), {
-            'board': self.board, 'year': self.thread2.time_made.year, 'search': self.thread2.post}, follow=True)
+            'board': self.board, 'year': self.thread2.time_made.year, 'search_term': self.thread2.post}, follow=True)
 
     def test_search_by_subject(self):
         self.assertContains(self.subject_resp, self.thread.subject)

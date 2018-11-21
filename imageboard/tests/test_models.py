@@ -4,7 +4,7 @@ from imageboard.models import Board, Thread, UserPost
 from seed.factories import faker, BoardFactory, ThreadFactory, UserPostFactory
 # Create your tests here.
 
-
+@tag('current')
 class ModelTestCase(TestCase):
    
     def setUp(self):
@@ -106,7 +106,18 @@ class ModelTestCase(TestCase):
     def test_thread_poster_id_editable(self):
         field = Thread._meta.get_field('poster_id')
         self.assertFalse(field.editable)
-   
+  
+    def test_post_number_editable(self):
+        field = UserPost._meta.get_field('post_number')
+        self.assertFalse(field.editable)
+
+    def test_post_time_made_editable(self):
+        field = UserPost._meta.get_field('time_made')
+        self.assertFalse(field.editable)
+
+    def test_post_poster_id_editable(self):
+        field = UserPost._meta.get_field('poster_id')
+        self.assertFalse(field.editable) 
 
 
 class SageTestCase(TestCase):

@@ -1,5 +1,9 @@
 {% extends parent_template|default:"archives/base_archives.html" %}
 
+{% block title %}
+  Archives
+{% endblock %}
+
 {% block arc_content %}
   {% include 'archives/includes/search_form.html' %}
 {% endblock %}

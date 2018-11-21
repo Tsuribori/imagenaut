@@ -33,11 +33,13 @@
   {% endif %}
     
   {% thumbnail thread.image "200x200" as img %}
-    <div class="grid-flex">
-      <a href="{{ thread.image.url }}">
-        <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
-      </a>
-    </div>
+    <p> 
+      <div class="grid-flex">
+        <a href="{{ thread.image.url }}">
+          <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
+        </a>
+      </div>
+    </p>
   {% endthumbnail %}
     
   {% if thread.embed %}
