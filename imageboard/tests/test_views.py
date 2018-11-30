@@ -313,7 +313,12 @@ class ThreadCatalogTestCase(TestCase):
 
     def test_back_link(self):
         self.assertContains(self.resp_all_threads, self.board.get_absolute_url())
-  
+ 
+    def test_search_term_unquoted(self):
+        thread = ThreadFactory(post='&')
+        resp = self.client.get('{}?search={}'.format(thread.board.get_catalog_url(), '%26'), follow=True)
+        self.assertContains(resp, thread.post)
+        
 
 class ImageTestCase(TestCase): #Test that images are shown 
 

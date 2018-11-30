@@ -28,6 +28,8 @@ class ArchiveSearchTerm(TestCase):
         self.board = BoardFactory()
         self.thread = ThreadFactory(archived=True, board=self.board)
         self.thread2 = ThreadFactory(archived=False, board=self.board)
+        self.search_term_thread = ThreadFactory(archived=True, post='&')
+        self.search_term_resp = self.client.post(reverse('archive_search_form'), {'board': self.search_term_thread.board.slug, 'search_term': '&'}, follow=True)
         self.subject_resp = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search_term': self.thread.subject}, follow=True)
         self.subject_resp2 = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search_term': self.thread2.subject}, follow=True)
         self.post_resp = self.client.post(reverse('archive_search_form'), {'board': self.board, 'search_term': self.thread.post}, follow=True)
@@ -44,6 +46,9 @@ class ArchiveSearchTerm(TestCase):
 
     def test_search_by_post_not_archived(self):
         self.assertNotContains(self.post_resp2, self.thread2.post)
+ 
+    def test_search_term_unquoted(self):  #Test that search_term is unquoted before used in a search
+        self.assertContains(self.search_term_resp, self.search_term_thread.post)
 
 #Similar test to above but on the date views, which have different logic that the archive list for only boards
 @tag('archive')
@@ -169,6 +174,11 @@ class ThreadYearArchiveTest(TestCase):
 
     def test_form_context(self):
         self.assertTrue('form' in self.resp.context)
+
+    def test_search_term_unquoted(self):  #Test that search_term is unquoted before used in a search
+        thread = ThreadFactory(archived=True, post='&')
+        resp = self.client.post(reverse('archive_search_form'), {'board': thread.board.slug, 'year': thread.time_made.year, 'search_term': '&'}, follow=True)
+        self.assertContains(resp, thread.post)
 
 
 @tag('archive')

@@ -1,14 +1,14 @@
 {% load thumbnail %}
 {% load embed_video_tags %}
 
-<div id={{ post.post_number }} class="card">
+<div id={{ post.post_number }} data-type="post" class="card">
 <div class="content">
   <span class="text-success">{{ post.name }}</span>
   {% if post.poster_id %}
     <span class="text-warning">ID: {{ post.poster_id }}</span>
   {% endif %}
   <span>{{ post.get_date }}</span>
-  <span>No. {{ post.post_number }}</span>
+  <span class="post_number" data-post-number="{{post.post_number}}">No. {{ post.post_number }}</span>
   {% if moderation_view == False %}
     <a href="{{ post.get_report_url }}">
       Report</a>
@@ -46,7 +46,7 @@
     </div>
   {% endif %}
 
-  <p>{{ post.post }}</p>
+  <p class="post_container">{{ post.post }}</p>
 
 </div>
 </div>

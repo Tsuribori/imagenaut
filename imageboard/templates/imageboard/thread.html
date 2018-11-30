@@ -14,7 +14,11 @@
     {% endfor %}
 
   </div>
-  <div class="card card-shadow">
+
+  <div class="card" id="react_root">
+  </div>
+
+  <div class="card card-shadow" id="reply_box">
     <div class="content">
       {% if thread.archived == False %}
         {% include "imageboard/userpost_form.html" %}

@@ -11,7 +11,7 @@
     <span class="text-warning">ID: {{ thread.poster_id }}</span>
   {% endif %}
   <span>{{ thread.get_date }}</span>
-  <span>No. {{ thread.thread_number }}</span> 
+  <span class="post_number">No. {{ thread.thread_number }}</span> 
   {% if thread.pinned %}
     <span class="text-error">Pinned</span>
   {% endif %}
