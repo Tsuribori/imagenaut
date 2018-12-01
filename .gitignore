@@ -2,6 +2,8 @@
 *.pyc
 .coverage
 geckodriver.log
-/static/*
-/media/*
+/imagenaut/static/*
+/imagenaut/media/*
+/imagenaut_frontend/node_modules
+/imagenaut_frontend/build
 
