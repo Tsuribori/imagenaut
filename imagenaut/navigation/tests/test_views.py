@@ -6,6 +6,7 @@ from seed.factories import BoardFactory, UserPostFactory, ModeratorFactory
 class BoardList(TestCase):
 
     def setUp(self):
+        self.empty_resp = self.client.get(reverse('navigation_board_list'))
         self.boards = BoardFactory.create_batch(5)
         self.resp = self.client.get(reverse('navigation_board_list'))
         mod = ModeratorFactory.create_mod()
@@ -21,6 +22,9 @@ class BoardList(TestCase):
     def test_name(self):
         for board in self.boards:
             self.assertContains(self.resp, board.name)
+
+    def test_empty(self):
+        self.assertContains(self.empty_resp, 'No boards found. Add them in the admin.') 
 
     def test_description(self):
         for board in self.boards:

@@ -3,7 +3,7 @@ from .base_settings import *
 DEBUG = True
 THUMBNAIL_DEBUG = True
 REST_VALIDATOR_SINGLE_USE = False
-
+DATABASES['default']['HOST'] = 'localhost'
 INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar',]
     
 MIDDLEWARE = [

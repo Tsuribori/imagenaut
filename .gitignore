@@ -4,6 +4,7 @@
 geckodriver.log
 /imagenaut/static/*
 /imagenaut/media/*
+/imagenaut/.env
 /imagenaut_frontend/node_modules
 /imagenaut_frontend/build
 

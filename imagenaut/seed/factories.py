@@ -19,7 +19,7 @@ class BoardFactory(factory.DjangoModelFactory):
     class Meta:
         model = Board
     
-    name = factory.LazyAttribute(lambda _: faker.name()) #These need to be unique
+    name = factory.LazyAttribute(lambda _: faker.text(max_nb_chars=20)) #These need to be unique
     slug = factory.LazyAttribute(lambda _: faker.slug())
 
 class ThreadFactory(factory.DjangoModelFactory):

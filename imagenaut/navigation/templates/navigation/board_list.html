@@ -19,6 +19,8 @@
         <p>{{ board.description }}</p>
       </div>
     </div>
+  {% empty %}
+    <p>No boards found. Add them in the admin.</p>
   {% endfor %}
 {% endblock %}
         

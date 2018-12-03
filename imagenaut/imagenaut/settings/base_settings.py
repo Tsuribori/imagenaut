@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 import os
+from decouple import config 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -19,8 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 't^9z#sw%pgdy2)5&59w-2@pygn@!o0id*^0l&ukw55c7prv1z0'
-
+SECRET_KEY = config('SECRET_KEY')
 ALLOWED_HOSTS = []
 
 
@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'imagenaut.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'imagenaut',
-        'USER' : 'defaultuser',
-        'PASSWORD': 'default',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': config('POSTGRES_DB'),
+        'USER' : config('POSTGRES_USER'),
+        'PASSWORD': config('POSTGRES_PASSWORD'),
+        'HOST': 'database',
+        'PORT': '5432',
         'TEST': {
             'NAME': 'test_imagenaut',
         },

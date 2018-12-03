@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  imagenaut:
+    build: . 
+    env_file:
+      - ./imagenaut/.env
+    volumes:
+      - .:/opt/services/imagenaut/src
+      - static_volume:/opt/services/imagenaut/src/imagenaut/static
+      - media_volume:/opt/services/imagenaut/src/imagenaut/media
+    networks:
+      - nginx_network
+      - database_network
+      - cache_network
+    depends_on:
+      - database
+      - cache
+
+  nginx:
+    image: nginx:1.15-alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - static_volume:/opt/services/imagenaut/src/imagenaut/static
+      - media_volume:/opt/services/imagenaut/src/imagenaut/media
+    depends_on:
+      - imagenaut
+    networks:
+      - nginx_network 
+
+  database:
+    image: postgres:10-alpine 
+    env_file: 
+      - ./imagenaut/.env
+    networks:
+      - database_network
+    volumes:
+      - database_volume:/var/lib/postgresql/data
+
+  cache:
+    image: memcached:1.5.12-alpine
+    ports:
+      - 11211:11211
+    networks:
+      - cache_network
+
+networks:
+  nginx_network:
+    driver: bridge
+  database_network:
+    driver: bridge
+  cache_network:
+    driver: bridge
+
+volumes:
+  database_volume:
+  static_volume:
+  media_volume:
