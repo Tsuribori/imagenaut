@@ -1,4 +1,5 @@
 {% extends parent_template|default:"imageboard/base_imageboard.html" %}
+{% load static %}
 {% load imageboard_objects %}
 
 {% block title %}
@@ -6,7 +7,7 @@
 {% endblock %}
  
 {% block img_content %}
-  <div>
+  <div id="thread_container">
     {% thread_format thread %}  
 
     {% for post in thread.cached_posts %}
@@ -27,4 +28,8 @@
       {% endif %}
     </div>
   </div>
+
+  {% block footer %}
+    <script src="{% static "core/main.js" %}"></script> 
+  {% endblock %}
 {% endblock %} 

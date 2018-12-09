@@ -4,7 +4,8 @@ from django.db.models import Prefetch, Q
 from .models import Board, Thread, UserPost
 from .forms import ThreadForm, UserPostForm
 from .utils import GetIPMixin, BanMixin, CooldownMixin
-from django.views.generic import View, ListView, CreateView, DeleteView
+from django_ajax.mixin import AJAXMixin
+from django.views.generic import View, ListView, CreateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 # Create your views here.
 
@@ -182,3 +183,16 @@ class ThreadCatalog(ListView):
        context = super().get_context_data(**kwargs)
        context['board'] = self.desired_board
        return context 
+
+
+class UserPostAJAX(TemplateView, AJAXMixin):
+    template_name = 'imageboard/includes/userpost_template.html' 
+
+    def dispatch(self, request, *args, **kwargs):
+        self.userpost = get_object_or_404(UserPost, post_number=kwargs['post_number'])
+        return super(UserPostAJAX, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post'] = self.userpost 
+        return context

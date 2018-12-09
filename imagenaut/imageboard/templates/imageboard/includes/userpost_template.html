@@ -8,7 +8,7 @@
     <span class="text-warning">ID: {{ post.poster_id }}</span>
   {% endif %}
   <span>{{ post.get_date }}</span>
-  <span class="post_number" data-post-number="{{post.post_number}}">No. {{ post.post_number }}</span>
+  <span class="post_number" data-post-number="{{ post.post_number }}">No. {{ post.post_number }}</span>
   {% if moderation_view == False %}
     <a href="{{ post.get_report_url }}">
       Report</a>
@@ -30,8 +30,11 @@
     <p>
       <div class="grid-flex">
         {% thumbnail post.image "200x200" as img %}
-          <a href="{{ post.image.url }}">
-            <img src="{{ img.url }}" height="{{ img.height }}" width="{{ img.width }}">
+          <a class="image" href="{{ post.image.url }}">
+            <img src="{{ img.url }}"
+              data-url="{{ img.url }}" 
+              height="{{ img.height }}" 
+              width="{{ img.width }}">
           </a>
         {% endthumbnail %}
       </div>

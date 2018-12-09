@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_ajax',
     'corsheaders',
     'captcha',
     'rest_framework',
@@ -170,7 +171,7 @@ CORS_ORIGIN_WHITELIST = (
 
 from django.urls import reverse_lazy
 
-LOGIN_REDIRECT_URL = reverse_lazy('imageboard_thread_list', kwargs={'board': 'a'})
+LOGIN_REDIRECT_URL = reverse_lazy('navigation_board_list')
 LOGIN_URL = reverse_lazy('dj-mod:login')
 LOGOUT_URL = reverse_lazy('dj-mod:logout')
 

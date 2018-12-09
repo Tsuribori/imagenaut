@@ -158,7 +158,7 @@ class LoginViewTestCase(TestCase):
 
     def test_login_view_post(self):
         resp = self.client.post(reverse('dj-mod:login'), {'username': 'user', 'password': 'pass'})
-        #self.assertRedirects(resp, expected_url=LOGIN_REDIRECT_URL, status_code=302)
+        self.assertRedirects(resp, expected_url=reverse('navigation_board_list'), status_code=302)
     
     def test_user_context(self):
         self.client.login(username='user', password='pass')

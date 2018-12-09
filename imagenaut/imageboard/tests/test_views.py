@@ -338,3 +338,18 @@ class ImageTestCase(TestCase): #Test that images are shown
     def test_image_in_catalog(self):
         resp = self.client.get(self.thread.board.get_catalog_url())
         self.assertContains(resp, self.thread.image.url)
+
+class UserPostAJAXTestCase(TestCase):
+
+    def setUp(self):
+        self.post = UserPostFactory()
+        self.resp = self.client.get(reverse('imageboard_userpost_ajax', kwargs={'post_number': self.post.post_number}))
+    
+    def test_status(self):
+        self.assertEqual(self.resp.status_code, 200)
+
+    def test_template(self):
+        self.assertTemplateUsed(self.resp, 'imageboard/includes/userpost_template.html')
+ 
+    def test_context(self):
+        self.assertEqual(self.resp.context['post'], self.post)
